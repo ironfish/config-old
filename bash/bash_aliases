@@ -1,0 +1,20 @@
+# Navigation shortcuts.
+alias ~="cd ~"
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+# Listing shortcuts.
+alias ll='ls -hl'
+alias la='ls -al'
+
+# Application shortcuts.
+alias sp='subl --project "$@"'
+alias v='open -a VimR'
+# Directory shortcuts.
+alias gn='cd ~/Dropbox/Notes'
+alias gw='cd ~/workspace'
+alias gwt='cd ~/workspace/typesafe'
+alias gww='cd ~/workspace/ww'
+
