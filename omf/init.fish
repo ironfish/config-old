@@ -11,8 +11,10 @@ set -x DOCKER_HOST tcp://192.168.59.103:2376
 set -x DOCKER_CERT_PATH /Users/Ironfish/.boot2docker/certs/boot2docker-vm
 set -x DOCKER_TLS_VERIFY 1
 
-# edit aliases
+# app aliases
 alias nvim 'env NVIM_TUI_ENABLE_TRUE_COLOR=1 nvim'
+
+# edit aliases
 alias ef 'nvim ~/GitHub/config/omf/init.fish'
 alias en 'nvim ~/GitHub/config/nvim/init.vim'
 
