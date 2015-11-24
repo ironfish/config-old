@@ -38,8 +38,7 @@ Plug 'https://github.com/Xuyuanp/nerdtree-git-plugin'              " provides gi
 Plug 'https://github.com/dhruvasagar/vim-vinegar'                  " allows nerdtree to operate like netrw
 Plug 'https://github.com/majutsushi/tagbar'                        " list functions and symbols
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
-Plug 'https://github.com/ctrlpvim/ctrlp.vim'
-Plug 'https://github.com/vim-scripts/ctrlp-funky'                  " show code outline w/o ctags!
+Plug 'junegunn/fzf.vim'
 call plug#end()
 " ==================================================================================================================================
 " }}
@@ -75,17 +74,19 @@ inoremap          <Up>   <C-o>gk
 let g:multi_cursor_next_key ='<C-n>'                                   "KEYM select word/next under cursor (v to enter normal mode)
 let g:multi_cursor_prev_key ='<C-m>'                                   "KEYM select previous word
 let g:multi_cursor_skip_key ='<C-x>'                                   "KEYM skip word
-let g:multi_cursor_quit_key='<Esc>'                                    "KEYM quit multi select
-nnoremap          <leader><leader> :FZF -m<CR>|                        "KEYM fzf search -m = multi-select
-nnoremap <silent> <leader><leader>b :call FzfBuffer()<CR>|             "KEYM fzf buffer search
-tnoremap          <leader><left> <c-\><c-n>:call TermInsert("h")<cr>|  "KEYM navigate right to terminal window
-tnoremap          <leader><right> <c-\><c-n>:call TermInsert("l")<cr>| "KEYM navigate right to terminal window
-tnoremap          <leader><down> <c-\><c-n>:call TermInsert("j")<cr>|  "KEYM navigate right to terminal window
-tnoremap          <leader><up> <c-\><c-n>:call TermInsert("k")<cr>|    "KEYM navigate right to terminal window
-nnoremap          <leader><left> :call TermInsert("h")<cr>|            "KEYM navigate right to terminal window
-nnoremap          <leader><right> :call TermInsert("l")<cr>|           "KEYM navigate right to terminal window
-nnoremap          <leader><down> :call TermInsert("j")<cr>|            "KEYM navigate right to terminal window
-nnoremap          <leader><up> :call TermInsert("k")<cr>|              "KEYM navigate right to terminal window
+let g:multi_cursor_quit_key ='<Esc>'                                   "KEYM quit multi select
+nnoremap <silent> <leader><leader> :Files<CR>|                         "KEYM fzf files search
+nnoremap <silent> <leader><leader>b :Buffers<CR>|                      "KEYM fzf buffers search
+nnoremap <silent> <leader><leader>l :BLines<CR>|                       "KEYM fzf lines in buffer
+nnoremap <silent> <leader><leader>t :BTags<CR>|                        "KEYM fzf tags in buffer search
+tnoremap          <leader>h <c-\><c-n>:call TermInsert("h")<cr>|       "KEYM navigate right to terminal window
+tnoremap          <leader>l <c-\><c-n>:call TermInsert("l")<cr>|       "KEYM navigate right to terminal window
+tnoremap          <leader>j <c-\><c-n>:call TermInsert("j")<cr>|       "KEYM navigate right to terminal window
+tnoremap          <leader>k <c-\><c-n>:call TermInsert("k")<cr>|       "KEYM navigate right to terminal window
+nnoremap          <leader>h :call TermInsert("h")<cr>|                 "KEYM navigate right to terminal window
+nnoremap          <leader>l :call TermInsert("l")<cr>|                 "KEYM navigate right to terminal window
+nnoremap          <leader>j :call TermInsert("j")<cr>|                 "KEYM navigate right to terminal window
+nnoremap          <leader>k :call TermInsert("k")<cr>|                 "KEYM navigate right to terminal window
 nnoremap          <leader>/ <C-w>v|                                    "KEYM neovim vertical window split
 nnoremap          <leader>- <C-w>s|                                    "KEYM neovim horizontal window split
 nnoremap <silent> <leader>// :vsp term://fish \| startinsert<CR>|      "KEYM neovim vertical terminal split
@@ -95,36 +96,26 @@ nnoremap          <leader>b :CtrlPBuffer<cr>|                          "KEYM ctr
 nmap              <leader>c <Plug>(caw:I:toggle)|                      "KEYM comment normal mode
 vmap              <leader>c <Plug>(caw:I:toggle)|                      "KEYM comment visual mode
 nnoremap          <leader>d :bd<CR>|                                   "KEYM delete current buffer
-imap              <leader>e <esc>0|                                    "KEYM go to beginning of line insert mode
-nnoremap          <leader>e 0|                                         "KEYM go to beginning of line normal mode
-vnoremap          <leader>e 0|                                         "KEYM go to beginning of line visual mode
-imap              <leader>ee <esc>$|                                   "KEYM go to end of line insert mode
-nnoremap          <leader>ee $|                                        "KEYM go to end of line normal mode
-vnoremap          <leader>ee $|                                        "KEYM go to end of line visual mode
+imap              <leader>b <esc>0|                                    "KEYM go to beginning of line insert mode
+nnoremap          <leader>b 0|                                         "KEYM go to beginning of line normal mode
+vnoremap          <leader>b 0|                                         "KEYM go to beginning of line visual mode
+imap              <leader>e <esc>$|                                    "KEYM go to end of line insert mode
+nnoremap          <leader>e $|                                         "KEYM go to end of line normal mode
+vnoremap          <leader>e $|                                         "KEYM go to end of line visual mode
 nnoremap          <leader>f za|                                        "KEYM toggle fold
 nnoremap          <leader>gd :Gdiff<CR>|                               "KEYM git diff
 nnoremap          <leader>gg :GitGutterToggle<CR>|                     "KEYM toggle gitgutter
 nmap              <leader>gs :Gstatus<CR>gg<c-n>|                      "KEYM git status
-nnoremap          <leader>h :noh<cr>|                                  "KEYM toggle highlight
+nnoremap          <leader>hh :noh<cr>|                                 "KEYM toggle highlight
 nnoremap          <leader>i :set list!<CR>|                            "KEYM toggle invisibles
-nnoremap <silent> <Leader>k :call ShowMaps()<CR>|                      "KEYM show key mappings
-nnoremap          <leader>l :CtrlPFunky<cr>|                           "KEYM ctrlp display tags
+nnoremap <silent> <Leader>m :call ShowMaps()<CR>|                      "KEYM show key mappings
 nnoremap          <leader>n :call ToggleNumber()<CR>|                  "KEYM toggle number/relative number
-nnoremap          <leader>o :CtrlP<cr>|                                "KEYM ctrlp search
 nnoremap          <leader>r :RainbowParentheses!!<CR>|                 "KEYM toggle rainbow
 map               <leader>s :setlocal spell!<cr>|                      "KEYM set spell check
 nnoremap          <leader>t :NERDTreeToggle<CR>|                       "KEYM toggle nerdtree
 nnoremap          <leader>w :w!<cr>|                                   "KEYM save
 let g:lt_location_list_toggle_map = '<leader>z'                        "KEYM toggle quickfix window
 nnoremap          <leader>ww :source $MYVIMRC<CR>|                     "KEYM reload nvimrc
-
-function! FzfBuffer()
-  call fzf#run({
-    \  'source':      reverse(<sid>buflist()),
-    \  'sink':        function('<sid>bufopen'),
-    \  'options':     '+m',
-    \  'down':        len(<sid>buflist()) + 2 })
-endfunction
 
 " force neovim terminal to enter insert mode
 function! TermInsert(direction)
@@ -136,7 +127,6 @@ function! TermInsert(direction)
 endfunction
 
 function! ShowMaps()
-""  :! ag --nocolor --nonumbers 'i(nore)?map|mapleader|let g:multi_cursor.|let g:lt_location_list.|n(nore)?map|v(nore)?map' $MYVIMRC | sed -E 's/^(( )*)?(.*)/\3/'
   :! ag --nocolor --nonumbers 'KEYM' $MYVIMRC | sed -E 's/^(( )*)?(.*)/\3/'
 endfunction
 " ==================================================================================================================================
@@ -172,6 +162,7 @@ set ruler                                     " show the line and column number 
 set scrolloff=8                               " keep cursor 8 lines from top and bottom when page scrolls
 set showcmd                                   " show partial command in the last line of the screen
 "set title                                    " NOTE: cause problems in neovim; set current file name to the title
+set tags=tags;/
 " ----------------------------------------------------------------------------------------------------------------------------------
 " behavior
 " ----------------------------------------------------------------------------------------------------------------------------------
@@ -316,8 +307,6 @@ augroup filetype_java
   autocmd FileType java setlocal foldlevelstart=10
   autocmd FileType java setlocal foldnestmax=10
   autocmd FileType java setlocal nofoldenable
-  "autocmd FileType scala setlocal omnifunc=scalaapi#complete
-  "autocmd FileType scala set tags=~/dotfiles/nvim/plugged/vim-scala/ctags/scala.ctags
 augroup END
 " ----------------------------------------------------------------------------------------------------------------------------------
 " html
@@ -339,15 +328,7 @@ augroup filetype_markdown
   let g:markdown_fenced_languages = ['bash=sh', 'css', 'django', 'java',
       \ 'javascript', 'js=javascript', 'json=javascript', 'perl', 'php', 'python', 'ruby',
       \ 'scala', 'sass', 'xml', 'html']
-  "autocmd FileType md   setlocal textwidth=0
 augroup END
-" ----------------------------------------------------------------------------------------------------------------------------------
-" netrw
-" ----------------------------------------------------------------------------------------------------------------------------------
-"autocmd FileType netrw nnoremap q :bd<CR>
-"let g:netrw_liststyle = 1
-"let g:netrw_list_hide=netrw_gitignore#Hide()
-"let g:netrw_special_syntax = 1
 " ----------------------------------------------------------------------------------------------------------------------------------
 " python
 " ----------------------------------------------------------------------------------------------------------------------------------
@@ -376,15 +357,6 @@ augroup filetype_scala
   autocmd FileType scala setlocal nofoldenable
   autocmd FileType scala setlocal omnifunc=scalaapi#complete
 augroup END
-" ----------------------------------------------------------------------------------------------------------------------------------
-" sbt
-" ----------------------------------------------------------------------------------------------------------------------------------
-" required to disable syntastic checking.
-"augroup filetype_sbt
-"  autocmd!
-"  autocmd BufNewFile,BufRead *.sbt set filetype=sbt
-"  autocmd FileType sbt setlocal syntax=scala
-"augroup END
 " ==================================================================================================================================
 " }}
 
@@ -397,18 +369,6 @@ let g:buftabline_indicators=1  " buffer's state is indicated in the buffer label
 let g:buftabline_show=1        " only if there are at least two buffers
 let g:buftabline_numbers=1     " the buffer number is shown in the buffer label
 " ----------------------------------------------------------------------------------------------------------------------------------
-" ctrlp
-" ----------------------------------------------------------------------------------------------------------------------------------
-let g:ctrlp_user_command='ag %s -l -g ""'    " use ag with (-l = files-with-matches, -g = pattern)
-let g:ctrlp_use_caching=0                    " disable cache, ag is more than fast enough
-" bottom = position window at bottom
-" order:ttb = order results from top to bottom
-" min:1 = minimum window size of 1
-" max:20 = maximum window size of 20
-" results:100 = maximum result list of 100 items
-let g:ctrlp_match_window='bottom,order:ttb,min:1,max:20,results:100'
-let g:ctrlp_funky_syntax_highlight=1    " syntax highlighting for function outlining
-" ----------------------------------------------------------------------------------------------------------------------------------
 " fzf
 " ----------------------------------------------------------------------------------------------------------------------------------
 " display finder info inline with query
@@ -417,22 +377,15 @@ if has('nvim')
   let $FZF_DEFAULT_OPTS=' --inline-info'
 endif
 
-" --- Buffer select
-function! s:buflist()
-  redir => ls
-  silent ls
-  redir END
-  return split(ls, '\n')
+function! s:fzf_statusline()
+  " Override statusline as you like
+  highlight fzf1 ctermfg=161 ctermbg=251
+  highlight fzf2 ctermfg=23 ctermbg=251
+  highlight fzf3 ctermfg=237 ctermbg=251
+  setlocal statusline=%#fzf1#\ >\ %#fzf2#fz%#fzf3#f
 endfunction
 
-function! s:bufopen(e)
-  execute 'buffer' matchstr(a:e, '^[ 0-9]*')
-endfunction
-
-command! FZFTag if !empty(tagfiles()) | call fzf#run({
-  \   'source': "sed '/^\\!/d;s/\t.*//' " . join(tagfiles()) . ' | uniq',
-  \   'sink':   'tag',
-  \ }) | else | echo 'No tags' | endif
+autocmd! User FzfStatusLine call <SID>fzf_statusline()
 " ----------------------------------------------------------------------------------------------------------------------------------
 " gitgutter
 " ----------------------------------------------------------------------------------------------------------------------------------
@@ -459,14 +412,13 @@ let g:indentLine_leadingSpaceEnabled=1
 let g:lightline = {
   \ 'colorscheme': 'powerline',
   \ 'active': {
-  \   'left': [ [ 'mode', 'paste' ], [ 'gitgutter', 'fugitive', 'filename' ], [ 'ctrlpmark' ] ],
-  \   'right': [ [ 'trailing', 'indentation', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype'] ]
+  \   'left': [ [ 'mode', 'paste' ], [ 'gitgutter', 'fugitive', 'filename' ] ],
+  \   'right': [ [ 'trailing', 'indentation', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype'] ]
   \ },
   \ 'component_function': {
   \   'gitgutter': 'MyGitGutter',
   \   'fugitive': 'MyFugitive',
   \   'filename': 'MyFilename',
-  \   'ctrlpmark': 'CtrlPMark',
   \   'lineinfo': 'MyLineinfo',
   \   'fileformat': 'MyFileformat',
   \   'fileencoding': 'MyFileencoding',
@@ -481,7 +433,7 @@ let g:lightline = {
   \   'indentation': 'warining',
   \ },
   \ 'separator': { 'left': '', 'right': '' },
-  \ 'subseparator': { 'left': '|', 'right': '|' }
+  \ 'subseparator': { 'left': "\u2502", 'right': "\u2502" }
   \ }
 
 function! MyModified()
@@ -495,7 +447,7 @@ endfunction
 function! MyFugitive()
   try
     if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
-      let mark = "\ue822"  " edit here for cool mark
+      let mark = "\uf126"  " edit here for cool mark
       let _ = fugitive#head()
       return strlen(_) ? mark . ' ' . _ : ''
     endif
@@ -505,7 +457,7 @@ function! MyFugitive()
 endfunction
 
 function! MyLineinfo()
-  return printf("\ue862 %3d:%-2d", line('.'), col('.'))
+  return printf("\uf0cb %3d:%-2d", line('.'), col('.'))
 endfunction
 
 function! MyFileformat()
@@ -517,46 +469,16 @@ function! MyFileencoding()
 endfunction
 
 function! MyFiletype()
-  return winwidth(0) > 70 ? (strlen(&filetype) ? "\ue12d" . ' ' . &filetype : 'no ft') : ''
+  return winwidth(0) > 70 ? (strlen(&filetype) ? "\uf15c" . ' ' . &filetype : 'no ft') : ''
 endfunction
 
-""\ fname == '__Tagbar__' ? g:lightline.fname :
 function! MyFilename()
   let fname = expand('%:t')
-  return fname == 'ControlP' ? g:lightline.ctrlp_item :
-    \ fname == '__Tagbar__' ? '' :
+  return fname == '__Tagbar__' ? '' :
     \ fname =~ 'NERD_tree' ? '' :
     \ ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
     \ ('' != fname ? fname : '[No Name]') .
     \ ('' != MyModified() ? ' ' . MyModified() : '')
-endfunction
-
-
-function! CtrlPMark()
-  if expand('%:t') =~ 'ControlP'
-    call lightline#link('iR'[g:lightline.ctrlp_regex])
-    return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
-      \ , g:lightline.ctrlp_next], 0)
-  else
-    return ''
-  endif
-endfunction
-
-let g:ctrlp_status_func = {
-  \ 'main': 'CtrlPStatusFunc_1',
-  \ 'prog': 'CtrlPStatusFunc_2',
-  \ }
-
-function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
-  let g:lightline.ctrlp_regex=a:regex
-  let g:lightline.ctrlp_prev=a:prev
-  let g:lightline.ctrlp_item=a:item
-  let g:lightline.ctrlp_next=a:next
-  return lightline#statusline(0)
-endfunction
-
-function! CtrlPStatusFunc_2(str)
-  return lightline#statusline(0)
 endfunction
 
 function! MyGitGutter()
