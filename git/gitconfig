@@ -1,5 +1,5 @@
 [core]
-  excludesfile = ~/GitHub/dotfiles/git/ignore
+  excludesfile = ~/GitHub/config/git/ignore
 [credential]
   helper = osxkeychain
 [color]

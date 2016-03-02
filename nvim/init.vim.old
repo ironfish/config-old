@@ -24,18 +24,17 @@ Plug 'https://github.com/ervandew/supertab'                        " for tab com
 Plug 'https://github.com/rizzatti/dash.vim'                        " OSX only - requires dash installation
 Plug 'https://github.com/Raimondi/delimitMate'                     " autocompletion for parens, brackets, etc.
 Plug 'https://github.com/itspriddle/vim-marked'                    " markdown - requires tabular to load first
-Plug 'https://github.com/plasticboy/vim-markdown'                  " awesome markdown tool
 Plug 'https://github.com/derekwyatt/vim-scala'                     " scala support
 Plug 'https://github.com/ironfish/scala-api-complete'              " my wip for scala completion
 "Plug 'https://github.com/benekastah/neomake'                       " async plugin for job-control
-Plug 'artur-shaik/vim-javacomplete2'                               " better java complete
-Plug 'https://github.com/vim-jp/vim-java'                          " better java syntax
+Plug 'artur-shaik/vim-javacomplete2'
 Plug 'https://github.com/Valloric/ListToggle'                      " toggles quickfix window
 Plug 'https://github.com/chriskempson/base16-vim'                  " imho, best color schemes around
-Plug 'https://github.com/NLKNguyen/papercolor-theme'               " even better color scheme
-Plug 'https://github.com/mhartington/oceanic-next'
-Plug 'https://github.com/nanotech/jellybeans.vim'
-Plug 'https://github.com/itchyny/lightline.vim'                    " super awesome status line
+Plug 'morhetz/gruvbox'
+Plug 'mhartington/oceanic-next'
+Plug 'https://github.com/NLKNguyen/papercolor-theme'
+Plug 'https://github.com/vim-airline/vim-airline'
+"Plug 'https://github.com/itchyny/lightline.vim'                    " super awesome status line
 Plug 'https://github.com/ap/vim-buftabline'                        " displays buffers in the tabline
 Plug 'https://github.com/Yggdroot/indentLine'                      " indents as a thin vertical line.
 Plug 'https://github.com/junegunn/rainbow_parentheses.vim'         " nested colored paranthesis
@@ -51,27 +50,22 @@ call plug#end()
 
 " MAPPINGS {{
 " ==================================================================================================================================
-" for space, use let mapleader='\<space>'
-let mapleader="\<space>"
-" use timeoutlen between mapped key press
-set timeout
-" timeout length to wait in millis
-set timeoutlen=200
-"KEYM start interactive easyalign visual mode
-vmap <Enter> <Plug>(EasyAlign)
-"KEYM start interactive easyalign
-nmap ga <Plug>(EasyAlign)
-"KEYM ctrl-r sucks for redo, us U instead
-noremap U <C-R>
-"KEYM jump between split pairs normal mode
-nnoremap <tab> %
-"KEYM jump between split pairs visual mode
-vnoremap <tab> %
-"KEYM use ; for commands.
-nnoremap ; :
-" ----------------------------------------------------------------------------------------------------------------------------------
-" multi_cursor mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
+let mapleader="\<space>"                                               " for space, use let mapleader='\<space>'
+set timeout                                                            " use timeoutlen between mapped key press
+set timeoutlen=200                                                     " timeout length to wait in millis
+vmap              <Enter> <Plug>(EasyAlign)|                           "KEYM start interactive easyalign visual mode
+nmap              ga <Plug>(EasyAlign)|                                "KEYM start interactive easyalign
+noremap           U <C-R>|                                             "KEYM ctrl-r sucks for redo, us U instead
+nnoremap          <tab> %|                                             "KEYM jump between split pairs normal mode
+vnoremap          <tab> %|                                             "KEYM jump between split pairs visual mode
+nnoremap          ; :|                                                 "KEYM use ; for commands.
+" move cursor down/up within non-breaking lines
+nnoremap          j gj
+nnoremap          k gk
+noremap           <Up> gk
+noremap           <Down> gj
+inoremap          <Down> <C-o>gj
+inoremap          <Up>   <C-o>gk
 " NOTE VISUAL MODE:
 "   1. ctrl-n will select the word(s) and place you in VISUAL mode
 "   3. 'h','j','k' and 'l' will allow you to change the selection block
@@ -82,127 +76,51 @@ nnoremap ; :
 "   3. 'I' will move the cursor to the beginning of the line for insertion
 "   4. 'a' will move the cursor to the end of the word for insertion
 "   4. 'A' will move the cursor to the end of the line for insertion
-" move cursor down/up within non-breaking lines
-nnoremap j gj
-nnoremap k gk
-noremap <Up> gk
-noremap <Down> gj
-inoremap <Down> <C-o>gj
-inoremap <Up>   <C-o>gk
-"KEYM select word/next under cursor (v to enter normal mode)
-let g:multi_cursor_next_key='<C-n>'
-"KEYM select previous word
-let g:multi_cursor_prev_key='<C-m>'
-"KEYM skip word
-let g:multi_cursor_skip_key='<C-x>'
-"KEYM quit multi select
-let g:multi_cursor_quit_key='<Esc>'
-" ----------------------------------------------------------------------------------------------------------------------------------
-" fzf mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM fzf files search
-nnoremap <silent> <leader><leader> :Files<CR>
-"KEYM fzf buffers search
-nnoremap <silent> <leader><leader>b :Buffers<CR>
-"KEYM fzf lines in buffer
-nnoremap <silent> <leader><leader>l :BLines<CR>
-"KEYM fzf tags in buffer search
-nnoremap <silent> <leader><leader>t :BTags<CR>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" neovim terminal and window split mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM navigate right to terminal window
-tnoremap <leader>h <c-\><c-n>:call TermInsert("h")<cr>
-"KEYM navigate right to terminal window
-tnoremap <leader>l <c-\><c-n>:call TermInsert("l")<cr>
-"KEYM navigate right to terminal window
-tnoremap <leader>j <c-\><c-n>:call TermInsert("j")<cr>
-"KEYM navigate right to terminal window
-tnoremap <leader>k <c-\><c-n>:call TermInsert("k")<cr>
-"KEYM navigate right to terminal window
-nnoremap <leader>h :call TermInsert("h")<cr>
-"KEYM navigate right to terminal window
-nnoremap <leader>l :call TermInsert("l")<cr>
-"KEYM navigate right to terminal window
-nnoremap <leader>j :call TermInsert("j")<cr>
-"KEYM navigate right to terminal window
-nnoremap <leader>k :call TermInsert("k")<cr>
-"KEYM neovim vertical window split
-nnoremap <leader>/ <C-w>v
-"KEYM neovim horizontal window split
-nnoremap <leader>- <C-w>s
-"KEYM neovim vertical terminal split
-nnoremap <silent> <leader>// :vsp term://fish \| startinsert<CR>
-"KEYM neovim horizontal terminal split
-nnoremap <silent> <leader>-- :sp term://fish \| startinsert<CR>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" dash mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM search dash for cursor word
-nmap <silent> <leader>a <Plug>DashSearch
-" ----------------------------------------------------------------------------------------------------------------------------------
-" ctrlp mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM ctrlp buffer
-nnoremap <leader>b :CtrlPBuffer<cr>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" commenter mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM comment normal mode
-nmap <leader>c <Plug>(caw:I:toggle)
-"KEYM comment visual mode
-vmap <leader>c <Plug>(caw:I:toggle)
-" ----------------------------------------------------------------------------------------------------------------------------------
-" editor mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM delete current buffer
-nnoremap <leader>d :bd<CR>
-"KEYM go to beginning of line insert mode
-imap <leader>b <esc>0
-"KEYM go to beginning of line normal mode
-nnoremap <leader>b 0
-"KEYM go to beginning of line visual mode
-vnoremap <leader>b 0
-"KEYM go to end of line insert mode
-imap <leader>e <esc>$
-"KEYM go to end of line normal mode
-nnoremap <leader>e $
-"KEYM go to end of line visual mode
-vnoremap <leader>e $
-"KEYM toggle fold
-nnoremap <leader>f za
-"KEYM toggle highlight
-nnoremap <leader>hh :noh<cr>
-"KEYM toggle invisibles
-nnoremap <leader>i :set list!<CR>
-"KEYM show key mappings
-nnoremap <silent> <Leader>m :call ShowMaps()<CR>
-"KEYM toggle number/relative number
-nnoremap <leader>n :call ToggleNumber()<CR>
-"KEYM toggle rainbow
-nnoremap <leader>r :RainbowParentheses!!<CR>
-"KEYM set spell check
-map <leader>s :setlocal spell!<cr>
-"KEYM save
-nnoremap <leader>w :w!<cr>
-"KEYM toggle quickfix window
-let g:lt_location_list_toggle_map = '<leader>z'
-"KEYM reload nvimrc
-nnoremap <leader>ww :source $MYVIMRC<CR>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" git mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM git diff
-nnoremap <leader>gd :Gdiff<CR>
-"KEYM toggle gitgutter
-nnoremap <leader>gg :GitGutterToggle<CR>
-"KEYM git status
-nmap <leader>gs :Gstatus<CR>gg<c-n>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" nerdtree mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM toggle nerdtree
-nnoremap <leader>t :NERDTreeToggle<CR>
+let g:multi_cursor_next_key ='<C-n>'                                   "KEYM select word/next under cursor (v to enter normal mode)
+let g:multi_cursor_prev_key ='<C-m>'                                   "KEYM select previous word
+let g:multi_cursor_skip_key ='<C-x>'                                   "KEYM skip word
+let g:multi_cursor_quit_key ='<Esc>'                                   "KEYM quit multi select
+nnoremap <silent> <leader><leader> :Files<CR>|                         "KEYM fzf files search
+nnoremap <silent> <leader><leader>b :Buffers<CR>|                      "KEYM fzf buffers search
+nnoremap <silent> <leader><leader>l :BLines<CR>|                       "KEYM fzf lines in buffer
+nnoremap <silent> <leader><leader>t :BTags<CR>|                        "KEYM fzf tags in buffer search
+tnoremap          <leader>h <c-\><c-n>:call TermInsert("h")<cr>|       "KEYM navigate right to terminal window
+tnoremap          <leader>l <c-\><c-n>:call TermInsert("l")<cr>|       "KEYM navigate right to terminal window
+tnoremap          <leader>j <c-\><c-n>:call TermInsert("j")<cr>|       "KEYM navigate right to terminal window
+tnoremap          <leader>k <c-\><c-n>:call TermInsert("k")<cr>|       "KEYM navigate right to terminal window
+nnoremap          <leader>h :call TermInsert("h")<cr>|                 "KEYM navigate right to terminal window
+nnoremap          <leader>l :call TermInsert("l")<cr>|                 "KEYM navigate right to terminal window
+nnoremap          <leader>j :call TermInsert("j")<cr>|                 "KEYM navigate right to terminal window
+nnoremap          <leader>k :call TermInsert("k")<cr>|                 "KEYM navigate right to terminal window
+nnoremap          <leader>/ <C-w>v|                                    "KEYM neovim vertical window split
+nnoremap          <leader>- <C-w>s|                                    "KEYM neovim horizontal window split
+nnoremap <silent> <leader>// :vsp term://fish \| startinsert<CR>|      "KEYM neovim vertical terminal split
+nnoremap <silent> <leader>-- :sp term://fish \| startinsert<CR>|       "KEYM neovim horizontal terminal split
+nmap     <silent> <leader>a <Plug>DashSearch|                          "KEYM search dash for cursor word
+nnoremap          <leader>b :CtrlPBuffer<cr>|                          "KEYM ctrlp buffer
+nmap              <leader>c <Plug>(caw:I:toggle)|                      "KEYM comment normal mode
+vmap              <leader>c <Plug>(caw:I:toggle)|                      "KEYM comment visual mode
+nnoremap          <leader>d :bd<CR>|                                   "KEYM delete current buffer
+imap              <leader>b <esc>0|                                    "KEYM go to beginning of line insert mode
+nnoremap          <leader>b 0|                                         "KEYM go to beginning of line normal mode
+vnoremap          <leader>b 0|                                         "KEYM go to beginning of line visual mode
+imap              <leader>e <esc>$|                                    "KEYM go to end of line insert mode
+nnoremap          <leader>e $|                                         "KEYM go to end of line normal mode
+vnoremap          <leader>e $|                                         "KEYM go to end of line visual mode
+nnoremap          <leader>f za|                                        "KEYM toggle fold
+nnoremap          <leader>gd :Gdiff<CR>|                               "KEYM git diff
+nnoremap          <leader>gg :GitGutterToggle<CR>|                     "KEYM toggle gitgutter
+nmap              <leader>gs :Gstatus<CR>gg<c-n>|                      "KEYM git status
+nnoremap          <leader>hh :noh<cr>|                                 "KEYM toggle highlight
+nnoremap          <leader>i :set list!<CR>|                            "KEYM toggle invisibles
+nnoremap <silent> <Leader>m :call ShowMaps()<CR>|                      "KEYM show key mappings
+nnoremap          <leader>n :call ToggleNumber()<CR>|                  "KEYM toggle number/relative number
+nnoremap          <leader>r :RainbowParentheses!!<CR>|                 "KEYM toggle rainbow
+map               <leader>s :setlocal spell!<cr>|                      "KEYM set spell check
+nnoremap          <leader>t :NERDTreeToggle<CR>|                       "KEYM toggle nerdtree
+nnoremap          <leader>w :w!<cr>|                                   "KEYM save
+let g:lt_location_list_toggle_map = '<leader>z'                        "KEYM toggle quickfix window
+nnoremap          <leader>ww :source $MYVIMRC<CR>|                     "KEYM reload nvimrc
 
 " force neovim terminal to enter insert mode
 function! TermInsert(direction)
@@ -224,216 +142,143 @@ endfunction
 " ----------------------------------------------------------------------------------------------------------------------------------
 " appearance
 " ----------------------------------------------------------------------------------------------------------------------------------
-" enable true color
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-" change curser shape in insert mode
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
-" enable syntax
-syntax enable
-" color scheme
-colorscheme papercolor
-
-" important for dark schemes
-"set background=dark
-
-" increase the left margin by 1
-set colorcolumn=+1
-" highlight current line
-set cursorline
-" show the status line
-set laststatus=2
-" redraw only when needed
-set lazyredraw
-" list characters
+syntax enable                                 " enable syntax
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1             " enable true color
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1           " change curser shape in insert mode
+"colorscheme base16-ocean                    " colorscheme
+"colorscheme base16-tomorrow                    " colorscheme
+"colorscheme base16-twilight                   " colorscheme
+"colorscheme gruvbox                   " colorscheme
+"colorscheme OceanicNext                  " colorscheme
+"let g:gruvbox_contrast_dark="medium"
+"set background=dark                           " important for dark schemes
+colorscheme PaperColor
+set colorcolumn=+1                            " increase the left margin by 1
+set cursorcolumn                              " highlight the current column
+set laststatus=2                              " show the status line
+set lazyredraw                                " redraw only when needed
 set listchars+=tab:›\ "
 set listchars+=trail:·
 set listchars+=nbsp:␣
 set listchars+=extends:›
 set listchars+=precedes:‹
 set listchars+=eol:¶"
-" highlight matching tags
-set matchpairs=(:),[:],{:},<:>
-" hide show mode in status line, using lightline plugin, not needed
-set noshowmode
-" keep the cursor on the same column
-set nostartofline
-" show line numbers
-set number
-" show the line and column number of the cursor
-set ruler
-" keep cursor 8 lines from top and bottom when page scrolls
-set scrolloff=8
-" show partial command in the last line of the screen
-set showcmd
-" tags location
+set matchpairs=(:),[:],{:},<:>                " highlight matching tags
+set nocursorline                              " NOTE: causes prolems with .md; do not highlight the current line
+set noshowmode                                " hide show mode in status line, using lightline plugin, not needed
+set nostartofline                             " keep the cursor on the same column
+set number                                    " show line numbers
+set ruler                                     " show the line and column number of the cursor
+set scrolloff=8                               " keep cursor 8 lines from top and bottom when page scrolls
+set showcmd                                   " show partial command in the last line of the screen
+"set title                                    " NOTE: cause problems in neovim; set current file name to the title
 set tags=tags;/
 " ----------------------------------------------------------------------------------------------------------------------------------
 " behavior
 " ----------------------------------------------------------------------------------------------------------------------------------
-" notify when file has changed outside of vim/nvim
-set autoread
-" write on exit
-set autowriteall
-" backspace over auto-indent, eol, start to join lines
-set backspace=indent,eol,start
-" use system clipboard
-set clipboard=unnamed
-" set default encoding (default in nvim)
-set encoding=utf-8
-" hide buffers when abandoned, will allow movement to another without saving
-set hidden
-" remember some stuff
-set history=100
-" enable mouse
-set mouse=a
-" turn off error bells
-set noerrorbells
-" turn off visual bell
-set novisualbell
-" default horizontal split is below
-set splitbelow
-" default vertical split is to the right
-set splitright
-" ctrl-v to select text in block mode
-if has('virtualedit')
-  " let me move cursor anywhere in buffer
-  set virtualedit+=block
+filetype on                                   " detect filetype
+filetype indent on                            " detect filetype specific indenting
+filetype plugin on                            " detect filetype specific plugins
+set autoread                                  " notify when file has changed outside of vim/nvim
+set autowriteall                              " write on exit
+set backspace=indent,eol,start                " backspace over auto-indent, eol, start to join lines
+set clipboard=unnamed                         " use system clipboard
+set encoding=utf-8                            " set default encoding (default in nvim)
+set hidden                                    " hide buffers when abandoned, will allow movement to another without saving
+set history=100                               " remember some stuff
+set mouse=a                                   " enable mouse
+set noerrorbells                              " turn off error bells
+set novisualbell                              " turn off visual bell
+set splitbelow                                " default horizontal split is below
+set splitright                                " default vertical split is to the right
+if has('virtualedit')                         " ctrl-v to select text in block mode
+  set virtualedit+=block                      " let me move cursor anywhere in buffer
 endif
-" make cursor keys wrap (] and \ are for right and left arrows
-set whichwrap=h,l,[<]>],[<\>]
+set whichwrap=h,l,[<]>],[<\>]                 " make cursor keys wrap (] and \ are for right and left arrows
 " ----------------------------------------------------------------------------------------------------------------------------------
 " folding
 " ----------------------------------------------------------------------------------------------------------------------------------
-" open all the highest level folds
-set foldlevel=0
-" open most folds by default
-set foldlevelstart=10
-" default fold marker
-set foldmarker={{,}}
-" default fold method
-set foldmethod=marker
-" maximum number of nested folds
-set foldnestmax=10
-" do not fold on start
-set nofoldenable
+set foldlevel=0                               " open all the highest level folds
+set foldlevelstart=10                         " open most folds by default
+set foldmarker={{,}}                          " default fold marker
+set foldmethod=marker                         " default fold method
+set foldnestmax=10                            " maximum number of nested folds
+set nofoldenable                              " do not fold on start
 " ----------------------------------------------------------------------------------------------------------------------------------
 " formatting
 " ----------------------------------------------------------------------------------------------------------------------------------
-" continue comments by default
-set formatoptions+=r
-" make comment when using o or O from comment line
-set formatoptions+=o
-" format comments with gq
-set formatoptions+=q
-" recognize numbered lists
-set formatoptions+=n
-" format comments
-set formatoptions+=c
-" wrap when using textwidth
-set formatoptions+=t
-" wrap long lines at a character
-set linebreak
-" don't join lines with two spaces at the end of sentences
-set nojoinspaces
-" do not show whitespace characters on start
-set nolist
-" line break character for wrapped lines
-set showbreak=↪
-" scrolling can be very slow for long wraps (i.e. columns)
-set synmaxcol=132
-" no hard breaks unless i press enter
-set textwidth=0
-" wrap text at window width
-set wrap
+set formatoptions+=r                          " continue comments by default
+set formatoptions+=o                          " make comment when using o or O from comment line
+set formatoptions+=q                          " format comments with gq
+set formatoptions+=n                          " recognize numbered lists
+set formatoptions+=c                          " format comments
+set formatoptions+=t                          " wrap when using textwidth
+set linebreak                                 " wrap long lines at a character
+set nojoinspaces                              " don't join lines with two spaces at the end of sentences
+set nolist                                    " do not show whitespace characters on start
+set showbreak=↪                               " line break character for wrapped lines
+set synmaxcol=132                             " scrolling can be very slow for long wraps (i.e. columns)
+set textwidth=0                               " no hard breaks unless i press enter
+set wrap                                      " wrap text at window width
 " ----------------------------------------------------------------------------------------------------------------------------------
 " indents
 " ----------------------------------------------------------------------------------------------------------------------------------
-" copy indent from current line
-set autoindent
-" number of spaces to use for indent
-set shiftwidth=2
-" smart auto-indenting when starting a new line
-set smartindent
+set autoindent                                " copy indent from current line
+set shiftwidth=2                              " number of spaces to use for indent
+set smartindent                               " smart auto-indenting when starting a new line
 " ----------------------------------------------------------------------------------------------------------------------------------
 " menus
 " ----------------------------------------------------------------------------------------------------------------------------------
-" show the whole tag, not just the function name
-set showfulltag
-" set menu for tab key
-set wildmenu
-" complete only up to the point of ambiguity
-set wildmode=list:longest,full
+set showfulltag                               " show the whole tag, not just the function name
+set wildmenu                                  " set menu for tab key
+set wildmode=list:longest,full                " complete only up to the point of ambiguity
 " ----------------------------------------------------------------------------------------------------------------------------------
-" search
+" search                                      " NOTE: type / followed by ctrl-f to open search history window
 " ----------------------------------------------------------------------------------------------------------------------------------
-" NOTE: type / followed by ctrl-f to open search history window
-" clear the last search results on loading of file
-let @/ = ""
-" highlight search results
-set hlsearch
-" incremental highlight as search is typed
-set incsearch
-" set search to ignore case
-set ignorecase
-" case sensitive search when given caps
-set smartcase
-" set search to wrap lines
-set wrapscan
+let @/ = ""                                   " clear the last search results on loading of file
+set hlsearch                                  " highlight search results
+set incsearch                                 " incremental highlight as search is typed
+set ignorecase                                " set search to ignore case
+set smartcase                                 " case sensitive search when given caps
+set wrapscan                                  " set search to wrap lines
 " ----------------------------------------------------------------------------------------------------------------------------------
 " spelling
 " ----------------------------------------------------------------------------------------------------------------------------------
-" trun on tab completion for spelling
-set complete+=kspell
-" unix/osx dictionary
-set dictionary+=/usr/share/dict/words
-" spelling whitelist
-set spellfile=$HOME/.nvim/spell/en.utf8.add
-" spelling language
-set spelllang=en_us
+set complete+=kspell                          " turn on tab completion for spelling
+set dictionary+=/usr/share/dict/words         " unix/osx dictionary
+set spellfile=$HOME/.nvim/spell/en.utf8.add   " spelling whitelist
+set spelllang=en_us                           " spelling language
 " ----------------------------------------------------------------------------------------------------------------------------------
 " tabs vs spaces
 " ----------------------------------------------------------------------------------------------------------------------------------
-" replace tabs with spaces
-set expandtab
-" when on, a <Tab> in fron of a line inserts blanks
-set smarttab
-" use 2 spaces, interpret tab as indent
-set softtabstop=2
-" set tab width
-set tabstop=2
+set expandtab                                 " replace tabs with spaces
+set smarttab                                  " when on, a <Tab> in front of a line inserts blanks
+set softtabstop=2                             " use 2 spaces, interpret tab as indent
+set tabstop=2                                 " set tab width
 " ----------------------------------------------------------------------------------------------------------------------------------
 " directories
 " ----------------------------------------------------------------------------------------------------------------------------------
-" backup file
-set backup
-" backup directory
-set backupdir=~/dotfiles/tmp/nvim-backup//
-" backup before overwriting original file
-set writebackup
+set backup                                    " backup file
+set backupdir=~/dotfiles/tmp/nvim-backup//    " backup directory
+set writebackup                               " backup before overwriting original file
 if !isdirectory(expand(&backupdir))
   call mkdir(expand(&backupdir), "p")
 endif
 
-" swap directory
-set directory=~/dotfiles/tmp/nvim-swap//
-" don't warn when there is existing swap file
-set shortmess+=A
-" time in millis until next swap file is written
-set updatetime=500
+set directory=~/dotfiles/tmp/nvim-swap//      " swap directory
+set shortmess+=A                              " don't warn when there is an existing swap file
+set updatetime=500                            " time in millis until next swap file is written
 if !isdirectory(expand(&directory))
   call mkdir(expand(&directory), "p")
 endif
 
-" undo directory
-set undodir=~/dotfiles/tmp/nvim-undo//
-" returns name of undo file
-set undofile
+set undodir=~/dotfiles/tmp/nvim-undo//        " undo directory
+set undofile                                  " returns name of undo file
 if !isdirectory(expand(&undodir))
   call mkdir(expand(&undodir), "p")
 endif
 
-" view directory
-set viewdir=~/dotfiles/tmp/nvim-view//
+set viewdir=~/dotfiles/tmp/nvim-view//        " view directory
 if !isdirectory(expand(&viewdir))
   call mkdir(expand(&viewdir), "p")
 endif
@@ -460,8 +305,7 @@ endfunction
 " ----------------------------------------------------------------------------------------------------------------------------------
 " java
 " ----------------------------------------------------------------------------------------------------------------------------------
-let g:JavaComplete_MavenRepositoryDisable = 1
-let g:java_highlight_functions="style"
+:let java_highlight_functions="style"
 augroup filetype_java
   autocmd!
   autocmd BufNewFile,BufRead *.java set filetype=java
@@ -485,6 +329,17 @@ augroup filetype_html
   autocmd FileType html setlocal tabstop=4
   autocmd FileType html setlocal softtabstop=4
   autocmd FileType html setlocal expandtab
+augroup END
+" ----------------------------------------------------------------------------------------------------------------------------------
+" markdown
+" ----------------------------------------------------------------------------------------------------------------------------------
+augroup filetype_markdown
+  autocmd!
+  " required so vim does not think .md files are something else
+  autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+  let g:markdown_fenced_languages = ['bash=sh', 'css', 'django', 'java',
+      \ 'javascript', 'js=javascript', 'json=javascript', 'perl', 'php', 'python', 'ruby',
+      \ 'scala', 'sass', 'xml', 'html']
 augroup END
 " ----------------------------------------------------------------------------------------------------------------------------------
 " python
@@ -520,18 +375,11 @@ augroup END
 " PLUGINS {{
 " ==================================================================================================================================
 " ----------------------------------------------------------------------------------------------------------------------------------
-" plasticboy markdown
-" ----------------------------------------------------------------------------------------------------------------------------------
-let g:vim_markdown_fenced_languages=['java=java', 'scala=scala']
-" ----------------------------------------------------------------------------------------------------------------------------------
 " buftabline
 " ----------------------------------------------------------------------------------------------------------------------------------
-" buffer's state is indicated in the buffer label
-let g:buftabline_indicators=1
-" only if there are at least two buffers
-let g:buftabline_show=1
-" the buffer number is shown in the buffer label
-let g:buftabline_numbers=1
+let g:buftabline_indicators=1  " buffer's state is indicated in the buffer label
+let g:buftabline_show=1        " only if there are at least two buffers
+let g:buftabline_numbers=1     " the buffer number is shown in the buffer label
 " ----------------------------------------------------------------------------------------------------------------------------------
 " fzf
 " ----------------------------------------------------------------------------------------------------------------------------------
@@ -553,33 +401,23 @@ autocmd! User FzfStatusLine call <SID>fzf_statusline()
 " ----------------------------------------------------------------------------------------------------------------------------------
 " gitgutter
 " ----------------------------------------------------------------------------------------------------------------------------------
-" disable gutter when gitgutter disabled
-let g:gitgutter_sign_column_always=0
-" enable at start
-let g:gitgutter_enabled=1
-" max signs
-let g:gitgutter_max_signs=1000
-" heavy greek cross
-let g:gitgutter_sign_added="\u271a"
-" heavy rounded-tip rightwards arrow
-let g:gitgutter_sign_modified="\u279c"
-" heavy ballot X
-let g:gitgutter_sign_removed="\u2718"
-" medium right facing triangle
-let g:gitgutter_sign_modified_removed="►"
-" enable signs by default
-let g:gitgutter_signs=1
-" enable line highlights
-let g:gitgutter_highlight_lines=0
+let g:gitgutter_sign_column_always=0         " disable gutter when gitgutter disabled
+let g:gitgutter_enabled=1                    " enable at start
+let g:gitgutter_max_signs=1000               " max signs
+let g:gitgutter_sign_added="\u271a"          " heavy greek cross
+let g:gitgutter_sign_modified="\u279c"       " heavy rounded-tip rightwards arrow
+let g:gitgutter_sign_removed="\u2718"        " heavy ballot X
+let g:gitgutter_sign_modified_removed="►"    " medium right facing triangle
+let g:gitgutter_signs=1                      " enable signs by default
+let g:gitgutter_highlight_lines=0            " enable line highlights
 " gitgutter will use Sign Column to set its color, reload it
 call gitgutter#highlight#define_highlights()
 " ----------------------------------------------------------------------------------------------------------------------------------
 " indentline
 " ----------------------------------------------------------------------------------------------------------------------------------
-let g:indentLine_concealcursor=""
-let g:indentLine_leadingSpaceChar="\u00b7"
+let g:indentLine_char='┋'
+let g:indentLine_leadingSpaceChar="."
 let g:indentLine_leadingSpaceEnabled=1
-let g:indentLine_color_gui = '#eeeeee'
 " ----------------------------------------------------------------------------------------------------------------------------------
 " lightline
 " ----------------------------------------------------------------------------------------------------------------------------------
@@ -760,19 +598,14 @@ if exists(':terminal')
     let g:terminal_color_20="#B8B8B8"
     let g:terminal_color_21="#E8E8E8"
   endif
-  let g:terminal_color_4="#4271ae"
 endif
 " ----------------------------------------------------------------------------------------------------------------------------------
 " nerdtree
 " ----------------------------------------------------------------------------------------------------------------------------------
-" set bookmarks file
-let NERDTreeBookmarksFile=expand("$HOME/dotfiles/tmp/ntbookmarks")
-" make nerdtree act like netrw
-let NERDTreeHijackNetrw=1
-" show bookmarks table
-let NERDTreeShowBookmarks=1
-" show hidden files
-let NERDTreeShowHidden=1
+let NERDTreeBookmarksFile=expand("$HOME/dotfiles/tmp/ntbookmarks")    " set bookmarks file
+let NERDTreeHijackNetrw=1    " make nerdtree act like netrw
+let NERDTreeShowBookmarks=1  " show bookmarks table
+let NERDTreeShowHidden=1     " show hidden files
 " ----------------------------------------------------------------------------------------------------------------------------------
 " rainbow parenthesis
 " ----------------------------------------------------------------------------------------------------------------------------------

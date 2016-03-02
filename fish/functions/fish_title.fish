@@ -1,0 +1,1 @@
+/Users/Ironfish/.config/fish/themes/flash/fish_title.fish
