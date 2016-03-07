@@ -4,9 +4,7 @@
 " Duncan K. DeVore / @ironfish
 "
 " ==================================================================================================================================
-if &shell=~# 'fish$'
-  set shell=/bin/sh
-endif
+set shell=/bin/sh
 
 " PLUG#BEGIN (plugin manager begin) {{
 " ==================================================================================================================================
@@ -20,17 +18,18 @@ Plug 'https://github.com/godlygeek/tabular'                        " for alignme
 Plug 'https://github.com/tpope/vim-surround'                       " surround with brackets, quotes, etc.
 Plug 'https://github.com/tyru/caw.vim'                             " for commenting code
 Plug 'https://github.com/terryma/vim-multiple-cursors'             " multiple cursor select
-Plug 'https://github.com/ervandew/supertab'                        " for tab completion
+Plug 'https://github.com/Shougo/deoplete.nvim'                     " awesome completion
 Plug 'https://github.com/rizzatti/dash.vim'                        " OSX only - requires dash installation
 Plug 'https://github.com/Raimondi/delimitMate'                     " autocompletion for parens, brackets, etc.
 Plug 'https://github.com/itspriddle/vim-marked'                    " markdown - requires tabular to load first
 Plug 'https://github.com/plasticboy/vim-markdown'                  " awesome markdown tool
 Plug 'https://github.com/derekwyatt/vim-scala'                     " scala support
 Plug 'https://github.com/ironfish/scala-api-complete'              " my wip for scala completion
-"Plug 'https://github.com/benekastah/neomake'                       " async plugin for job-control
 Plug 'artur-shaik/vim-javacomplete2'                               " better java complete
 Plug 'https://github.com/vim-jp/vim-java'                          " better java syntax
 Plug 'https://github.com/Valloric/ListToggle'                      " toggles quickfix window
+Plug 'junegunn/vim-pseudocl'
+Plug 'junegunn/vim-oblique'                                        " much better than the native search highlighting
 Plug 'https://github.com/chriskempson/base16-vim'                  " imho, best color schemes around
 Plug 'https://github.com/NLKNguyen/papercolor-theme'               " even better color scheme
 Plug 'https://github.com/mhartington/oceanic-next'
@@ -51,37 +50,80 @@ call plug#end()
 
 " MAPPINGS {{
 " ==================================================================================================================================
-" for space, use let mapleader='\<space>'
+"KEYM ------------------------------------------------------------------------------------------------------------------------------
+"KEYM editor mappings
+"KEYM ------------------------------------------------------------------------------------------------------------------------------
+"KEYM | space                      |    n, v | leader
 let mapleader="\<space>"
 " use timeoutlen between mapped key press
 set timeout
 " timeout length to wait in millis
 set timeoutlen=200
-"KEYM start interactive easyalign visual mode
-vmap <Enter> <Plug>(EasyAlign)
-"KEYM start interactive easyalign
-nmap ga <Plug>(EasyAlign)
-"KEYM ctrl-r sucks for redo, us U instead
+"KEYM | <leader>a                  |    n    | search dash for cursor word
+nmap <silent> <leader>a <Plug>DashSearch
+"KEYM | <leader>b OR 0             | i, n, v | go to beginning of line insert mode
+imap <leader>b <esc>0
+nnoremap <leader>b 0
+vnoremap <leader>b 0
+"KEYM | <leader>c                  |    n, v | comment normal mode
+nmap <leader>c <Plug>(caw:I:toggle)
+vmap <leader>c <Plug>(caw:I:toggle)
+"KEYM | <leader>d                  |    n    | delete current buffer
+nnoremap <leader>d :bd<CR>
+"KEYM | <leader>e OR $             | i, n, v | go to end of line
+imap <leader>e <esc>$
+nnoremap <leader>e $
+vnoremap <leader>e $
+"KEYM | <leader>f OR za            |    n    | toggle fold
+nnoremap <leader>f za
+"KEYM | <leader>hh                 |    n    | toggle highlight
+nnoremap <leader>hh :noh<cr>
+"KEYM | <leader>i                  |    n    | toggle invisibles
+nnoremap <leader>i :set list!<CR>
+"KEYM | <leader>m                  |    n    | show key mappings
+nnoremap <silent> <Leader>m :call ShowMaps()<CR>
+"KEYM | <leader>n                  |    n    | toggle number/relative number
+nnoremap <leader>n :call ToggleNumber()<CR>
+"KEYM | <leader>r                  |    n    | toggle rainbow
+nnoremap <leader>r :RainbowParentheses!!<CR>
+"KEYM | <leader>s                  |    n    | set spell check
+map <leader>s :setlocal spell!<cr>
+"KEYM | <leader>t                  |    n    | toggle nerdtree
+nnoremap <leader>t :NERDTreeToggle<CR>
+"KEYM | U                          |    n    | ctrl-r sucks for redo, us U instead
 noremap U <C-R>
-"KEYM jump between split pairs normal mode
+"KEYM | <leader>w                  |    n    | save
+nnoremap <leader>w :w!<cr>
+"KEYM | <tab> %                    |    n    | jump between split pairs normal mode
 nnoremap <tab> %
-"KEYM jump between split pairs visual mode
+"KEYM | <tab> %                    |    n    | jump between split pairs visual mode
 vnoremap <tab> %
-"KEYM use ; for commands.
+"KEYM | ;                          |    n    | use ; for commands.
 nnoremap ; :
-" ----------------------------------------------------------------------------------------------------------------------------------
-" multi_cursor mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-" NOTE VISUAL MODE:
-"   1. ctrl-n will select the word(s) and place you in VISUAL mode
-"   3. 'h','j','k' and 'l' will allow you to change the selection block
-"   4. 'c' or 's' will delete the selected word(s) and enter INSERT mode
-" NOTE NORMAL MODE:
-"   1. use 'v' to enter normal mode
-"   2. 'i' will insert at the cursor(s) current location
-"   3. 'I' will move the cursor to the beginning of the line for insertion
-"   4. 'a' will move the cursor to the end of the word for insertion
-"   4. 'A' will move the cursor to the end of the line for insertion
+"KEYM | <leader>z                  |    n    | toggle quickfix window
+let g:lt_location_list_toggle_map = '<leader>z'
+"KEYM | <leader>ww                 |    n    | reload nvimrc
+nnoremap <leader>ww :source $MYVIMRC<CR>
+"KEYM ------------------------------------------------------------------------------------------------------------------------------
+"KEYM easyalign mappings
+"KEYM ------------------------------------------------------------------------------------------------------------------------------
+"KEYM | <enter>                    |       v | start interactive easyalign visual mode
+vmap <Enter> <Plug>(EasyAlign)
+"KEYM | ga                         |    n    | start easyalign in normal
+nmap ga <Plug>(EasyAlign)
+"KEYM ----------------------------------------------------------------------------------------------------------------------------------
+"KEYM multi_cursor mappings
+"KEYM ----------------------------------------------------------------------------------------------------------------------------------
+"NOTE VISUAL MODE:
+"  1. ctrl-n will select the word(s) and place you in VISUAL mode
+"  2. 'h','j','k' and 'l' will allow you to change the selection block
+"  3. 'c' or 's' will delete the selected word(s) and enter INSERT mode
+"NOTE NORMAL MODE:
+"  1. use 'v' to enter normal mode
+"  2. 'i' will insert at the cursor(s) current location
+"  3. 'I' will move the cursor to the beginning of the line for insertion
+"  4. 'a' will move the cursor to the end of the word for insertion
+"  5. 'A' will move the cursor to the end of the line for insertion
 " move cursor down/up within non-breaking lines
 nnoremap j gj
 nnoremap k gk
@@ -89,120 +131,69 @@ noremap <Up> gk
 noremap <Down> gj
 inoremap <Down> <C-o>gj
 inoremap <Up>   <C-o>gk
-"KEYM select word/next under cursor (v to enter normal mode)
+"KEYM | <C-n>                      |    n    | select word/next under cursor, 
+"KEYM | h, j, k, l                 |       v | to change slection
+"KEYM | c, s                       |       v | to delete
+"KEYM | i                          | i       | insert at cursor
 let g:multi_cursor_next_key='<C-n>'
-"KEYM select previous word
+"KEYM | <C-m>                      |    n    | select previous word
 let g:multi_cursor_prev_key='<C-m>'
-"KEYM skip word
+"KEYM | <C-x>                      |    n    | skip word
 let g:multi_cursor_skip_key='<C-x>'
-"KEYM quit multi select
+"KEYM | <Esc>                      |    n    | quit multi select
 let g:multi_cursor_quit_key='<Esc>'
-" ----------------------------------------------------------------------------------------------------------------------------------
-" fzf mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM fzf files search
+"KEYM ----------------------------------------------------------------------------------------------------------------------------------
+"KEYM fzf mappings
+"KEYM ----------------------------------------------------------------------------------------------------------------------------------
+"KEYM | <leader><leader> OR <C-f>  |    n    | fzf files search
 nnoremap <silent> <leader><leader> :Files<CR>
-"KEYM fzf buffers search
+nnoremap <silent> <c-f> :Files<CR>
+"KEYM | <leader><leader>b OR <C-b> |    n    | fzf buffers search
 nnoremap <silent> <leader><leader>b :Buffers<CR>
-"KEYM fzf lines in buffer
+nnoremap <silent> <c-b> :Buffers<CR>
+"KEYM | <leader><leader>l OR <C-l> ]|   n    | fzf lines in buffer
 nnoremap <silent> <leader><leader>l :BLines<CR>
-"KEYM fzf tags in buffer search
+nnoremap <silent> <c-l> :BLines<CR>
+"KEYM | <leader><leader>l OR <C-t> |    n    | fzf tags in buffer search
 nnoremap <silent> <leader><leader>t :BTags<CR>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" neovim terminal and window split mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM navigate right to terminal window
+nnoremap <silent> <c-t> :BTags<CR>
+"KEYM ----------------------------------------------------------------------------------------------------------------------------------
+"KEYM neovim terminal and window split mappings
+"KEYM ----------------------------------------------------------------------------------------------------------------------------------
+"KEYM | <leader>h                  |    n    | navigate left to terminal/window
 tnoremap <leader>h <c-\><c-n>:call TermInsert("h")<cr>
-"KEYM navigate right to terminal window
-tnoremap <leader>l <c-\><c-n>:call TermInsert("l")<cr>
-"KEYM navigate right to terminal window
-tnoremap <leader>j <c-\><c-n>:call TermInsert("j")<cr>
-"KEYM navigate right to terminal window
-tnoremap <leader>k <c-\><c-n>:call TermInsert("k")<cr>
-"KEYM navigate right to terminal window
 nnoremap <leader>h :call TermInsert("h")<cr>
-"KEYM navigate right to terminal window
+"KEYM | <leader>l                  |    n    | navigate right to terminal/window
+tnoremap <leader>l <c-\><c-n>:call TermInsert("l")<cr>
 nnoremap <leader>l :call TermInsert("l")<cr>
-"KEYM navigate right to terminal window
+"KEYM | <leader>j                  |    n    | navigate down to terminal/window
+tnoremap <leader>j <c-\><c-n>:call TermInsert("j")<cr>
 nnoremap <leader>j :call TermInsert("j")<cr>
-"KEYM navigate right to terminal window
+"KEYM | <leader>k                  |    n    | navigate up to terminal/window
+tnoremap <leader>k <c-\><c-n>:call TermInsert("k")<cr>
 nnoremap <leader>k :call TermInsert("k")<cr>
-"KEYM neovim vertical window split
+"KEYM | <leader>/                  |    n    | neovim vertical window split
 nnoremap <leader>/ <C-w>v
-"KEYM neovim horizontal window split
+"KEYM | <leader>-                  |    n    | neovim horizontal window split
 nnoremap <leader>- <C-w>s
-"KEYM neovim vertical terminal split
+"KEYM | <leader>//                 |    n    | neovim vertical terminal split
 nnoremap <silent> <leader>// :vsp term://fish \| startinsert<CR>
-"KEYM neovim horizontal terminal split
+"KEYM | <leader>--                 |    n    | neovim horizontal terminal split
 nnoremap <silent> <leader>-- :sp term://fish \| startinsert<CR>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" dash mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM search dash for cursor word
-nmap <silent> <leader>a <Plug>DashSearch
-" ----------------------------------------------------------------------------------------------------------------------------------
-" ctrlp mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM ctrlp buffer
-nnoremap <leader>b :CtrlPBuffer<cr>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" commenter mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM comment normal mode
-nmap <leader>c <Plug>(caw:I:toggle)
-"KEYM comment visual mode
-vmap <leader>c <Plug>(caw:I:toggle)
-" ----------------------------------------------------------------------------------------------------------------------------------
-" editor mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM delete current buffer
-nnoremap <leader>d :bd<CR>
-"KEYM go to beginning of line insert mode
-imap <leader>b <esc>0
-"KEYM go to beginning of line normal mode
-nnoremap <leader>b 0
-"KEYM go to beginning of line visual mode
-vnoremap <leader>b 0
-"KEYM go to end of line insert mode
-imap <leader>e <esc>$
-"KEYM go to end of line normal mode
-nnoremap <leader>e $
-"KEYM go to end of line visual mode
-vnoremap <leader>e $
-"KEYM toggle fold
-nnoremap <leader>f za
-"KEYM toggle highlight
-nnoremap <leader>hh :noh<cr>
-"KEYM toggle invisibles
-nnoremap <leader>i :set list!<CR>
-"KEYM show key mappings
-nnoremap <silent> <Leader>m :call ShowMaps()<CR>
-"KEYM toggle number/relative number
-nnoremap <leader>n :call ToggleNumber()<CR>
-"KEYM toggle rainbow
-nnoremap <leader>r :RainbowParentheses!!<CR>
-"KEYM set spell check
-map <leader>s :setlocal spell!<cr>
-"KEYM save
-nnoremap <leader>w :w!<cr>
-"KEYM toggle quickfix window
-let g:lt_location_list_toggle_map = '<leader>z'
-"KEYM reload nvimrc
-nnoremap <leader>ww :source $MYVIMRC<CR>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" git mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM git diff
+"KEYM ----------------------------------------------------------------------------------------------------------------------------------
+"KEYM git mappings
+"KEYM ----------------------------------------------------------------------------------------------------------------------------------
+"KEYM | <leader>gd                 |    n    | git diff
 nnoremap <leader>gd :Gdiff<CR>
-"KEYM toggle gitgutter
+"KEYM | <leader>gg                 |    n    | toggle gitgutter
 nnoremap <leader>gg :GitGutterToggle<CR>
-"KEYM git status
+"KEYM | <leader>gs                 |    n    | git status
 nmap <leader>gs :Gstatus<CR>gg<c-n>
-" ----------------------------------------------------------------------------------------------------------------------------------
-" nerdtree mappings
-" ----------------------------------------------------------------------------------------------------------------------------------
-"KEYM toggle nerdtree
-nnoremap <leader>t :NERDTreeToggle<CR>
+
+" show keymappings
+function! ShowMaps()
+  :! ag --nocolor --nonumbers 'KEYM' $MYVIMRC | sed -E 's/^(( )*)?(.*)/\3/'
+endfunction
 
 " force neovim terminal to enter insert mode
 function! TermInsert(direction)
@@ -213,8 +204,14 @@ function! TermInsert(direction)
   endif
 endfunction
 
-function! ShowMaps()
-  :! ag --nocolor --nonumbers 'KEYM' $MYVIMRC | sed -E 's/^(( )*)?(.*)/\3/'
+" toggle relative line numbers
+function! ToggleNumber()
+  if(&relativenumber == 1)
+    set norelativenumber
+    set number
+  else
+    set relativenumber
+  endif
 endfunction
 " ==================================================================================================================================
 " }}
@@ -240,6 +237,8 @@ colorscheme papercolor
 set colorcolumn=+1
 " highlight current line
 set cursorline
+" show vertical line
+set cursorcolumn
 " show the status line
 set laststatus=2
 " redraw only when needed
@@ -289,7 +288,10 @@ set mouse=a
 " turn off error bells
 set noerrorbells
 " turn off visual bell
-set novisualbell
+set novisualbell t_vb=
+if has('autocmd')
+  autocmd GUIEnter * set visualbell t_vb=
+endif
 " default horizontal split is below
 set splitbelow
 " default vertical split is to the right
@@ -443,15 +445,6 @@ if !has('nvim')
 else
   set viminfo='1000,n~/dotfiles/tmp/nviminfo
 endif
-
-function! ToggleNumber()
-  if(&relativenumber == 1)
-    set norelativenumber
-    set number
-  else
-    set relativenumber
-  endif
-endfunction
 " ==================================================================================================================================
 " }}
 
@@ -512,17 +505,13 @@ augroup filetype_scala
   autocmd FileType scala setlocal foldlevelstart=10
   autocmd FileType scala setlocal foldnestmax=10
   autocmd FileType scala setlocal nofoldenable
-  autocmd FileType scala setlocal omnifunc=scalaapi#complete
+""  autocmd FileType scala setlocal omnifunc=scalaapi#complete
 augroup END
 " ==================================================================================================================================
 " }}
 
 " PLUGINS {{
 " ==================================================================================================================================
-" ----------------------------------------------------------------------------------------------------------------------------------
-" plasticboy markdown
-" ----------------------------------------------------------------------------------------------------------------------------------
-let g:vim_markdown_fenced_languages=['java=java', 'scala=scala']
 " ----------------------------------------------------------------------------------------------------------------------------------
 " buftabline
 " ----------------------------------------------------------------------------------------------------------------------------------
@@ -532,6 +521,10 @@ let g:buftabline_indicators=1
 let g:buftabline_show=1
 " the buffer number is shown in the buffer label
 let g:buftabline_numbers=1
+" ----------------------------------------------------------------------------------------------------------------------------------
+" deocomplete
+" ----------------------------------------------------------------------------------------------------------------------------------
+let g:deoplete#enable_at_startup = 1
 " ----------------------------------------------------------------------------------------------------------------------------------
 " fzf
 " ----------------------------------------------------------------------------------------------------------------------------------
@@ -774,23 +767,14 @@ let NERDTreeShowBookmarks=1
 " show hidden files
 let NERDTreeShowHidden=1
 " ----------------------------------------------------------------------------------------------------------------------------------
+" plasticboy markdown
+" ----------------------------------------------------------------------------------------------------------------------------------
+let g:vim_markdown_fenced_languages=['java=java', 'scala=scala']
+" ----------------------------------------------------------------------------------------------------------------------------------
 " rainbow parenthesis
 " ----------------------------------------------------------------------------------------------------------------------------------
 let g:rainbow#max_level=16
 let g:rainbow#pairs=[['(', ')'], ['[', ']'], ['{','}']]
-" ----------------------------------------------------------------------------------------------------------------------------------
-" supertab
-" ----------------------------------------------------------------------------------------------------------------------------------
-"@see - https://github.com/ervandew/supertab/issues/99
-let g:SuperTabDefaultCompletionType="context"
-let g:SuperTabContextDefaultCompletionType="<c-p>"
-let g:SuperTabCompletionContexts=['s:ContextText', 's:ContextDiscover']
-let g:SuperTabContextDiscoverDiscovery=["&omnifunc:<c-x><c-o>"]
-autocmd FileType *
-  \ if &omnifunc != '' |
-  \   call SuperTabChain(&omnifunc, "<c-p>") |
-  \   call SuperTabSetDefaultCompletionType("<c-x><c-u>") |
-  \ endif
 " ----------------------------------------------------------------------------------------------------------------------------------
 " tagbar
 " ----------------------------------------------------------------------------------------------------------------------------------
