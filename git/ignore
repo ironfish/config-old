@@ -24,6 +24,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# atom
+.atom-classpath
+
 # CTAGS
 tags
 
