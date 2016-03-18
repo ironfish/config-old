@@ -7,6 +7,7 @@
 # environment variables
 #set -g -x fish_term24bit 1
 set -g -x FZF_DEFAULT_COMMAND 'ag -l -g ""'
+set -g -x FZF_DEFAULT_OPTS '--color fg:251,bg:234,hl:167,fg+:178,bg+:236,hl+:167 --color info:183,prompt:110,spinner:107,pointer:167,marker:215'
 set -x DOCKER_HOST tcp://192.168.59.103:2376
 set -x DOCKER_CERT_PATH /Users/Ironfish/.boot2docker/certs/boot2docker-vm
 set -x DOCKER_TLS_VERIFY 1
@@ -36,3 +37,6 @@ alias gs 'git status'
 # sbt aliases
 alias scc 'sbt clean compile'
 alias st  'sbt test'
+set fisher_home ~/.local/share/fisherman
+set fisher_config ~/.config/fisherman
+source $fisher_home/config.fish

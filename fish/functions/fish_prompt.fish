@@ -1,1 +1,0 @@
-/Users/Ironfish/.config/fish/themes/flash/fish_prompt.fish
