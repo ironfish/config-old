@@ -24,8 +24,6 @@ function! InitGitGutter()
 
   " gitgutter will use Sign Column to set its color, reload it
   call gitgutter#highlight#define_highlights()
-
-  nnoremap <leader>gg :GitGutterToggle<CR>
 endfunction
 "}}
 
@@ -33,7 +31,7 @@ endfunction
 Plug 'tpope/vim-fugitive'
 function! InitFugative()
   nnoremap <leader>gd :Gdiff<CR>
-  nmap <leader>gs :Gstatus<CR>gg<c-n>
+  nmap gs :Gstatus<CR>gg<c-n>
 endfunction
 " }}
 
@@ -77,12 +75,6 @@ function! InitMultipleCursors()
     let b:deoplete_disable_auto_complete = 0
   endfunction
 
-  nnoremap j gj
-  nnoremap k gk
-  noremap <Up> gk
-  noremap <Down> gj
-  inoremap <Down> <C-o>gj
-  inoremap <Up>   <C-o>gk
 endfunction
 
 Plug 'tpope/vim-commentary'                                         " comment stuff
@@ -114,14 +106,9 @@ function! InitFzfVim()
 
   autocmd! User FzfStatusLine call <SID>fzf_statusline()
 
-  nnoremap <silent> <leader><leader> :Files<CR>
-  nnoremap <silent> <c-f> :Files<CR>
-  nnoremap <silent> <leader><leader>b :Buffers<CR>
-  nnoremap <silent> <c-b> :Buffers<CR>
-  nnoremap <silent> <leader><leader>l :BLines<CR>
-  nnoremap <silent> <c-l> :BLines<CR>
-  nnoremap <silent> <leader><leader>t :BTags<CR>
-  nnoremap <silent> <c-t> :BTags<CR>
+  nnoremap <silent> <leader>f :Files<CR>
+  nnoremap <silent> <leader>b :Buffers<CR>
+  nnoremap <silent> <leader>t :BTags<CR>
 endfunction
 " }}
 
@@ -188,12 +175,14 @@ function! InitNeomake()
     \ }
   let g:neomake_sbt_maker = {
     \ 'exe': 'sbt',
-    \ 'args': ['-Dsbt.log.noformat=true', 'compile'],
+    \ 'args': ['-Dsbt.log.noformat=true', '~compile'],
     \ 'errorformat':
     \ '%E\ %#[error]\ %f:%l:\ %m,%C\ %#[error]\ %p^,%-C%.%#,%Z,%W\ %#[warn]\ %f:%l:\ %m,%C\ %#[warn]\ %p^,%-C%.%#,%Z,%-G%.%#',
     \ 'buffer_output': 1
     \ }
+
   "autocmd! BufWritePost,BufReadPost * Neomake
+
 endfunction
 " }}
 
@@ -214,7 +203,7 @@ Plug 'Shougo/deoplete.nvim'
 function InitDeoplete()
   let g:deoplete#enable_at_startup = 1
   let g:deoplete#enable_camel_case = 1
-  let g:deoplete#auto_complete_delay = 300
+  let g:deoplete#auto_complete_delay = 100
 
   " <TAB>: completion.
   imap <silent><expr> <TAB>
@@ -411,7 +400,6 @@ function! InitRainbowParentheses()
   let g:rainbow#max_level=16
   let g:rainbow#pairs=[['(', ')'], ['[', ']'], ['{','}']]
   call rainbow_parentheses#activate()
-  nnoremap <leader>r :RainbowParentheses!!<CR>
 endfunction
 " }}
 
@@ -420,7 +408,7 @@ Plug 'majutsushi/tagbar', { 'on': 'TagbarToggle' }
 function! InitTagbar()
   let g:tagbar_compact=1
   let g:tagbar_indent=1
-  nnoremap <leader>t :TagbarToggle<CR>
+  nnoremap <leader>tt :TagbarToggle<CR>
 endfunction
 " }}
 
@@ -442,21 +430,8 @@ let mapleader="\<space>"
 set timeout
 set timeoutlen=200
 
-" got to beginning of line
-imap <leader>b <esc>0
-nnoremap <leader>b 0
-vnoremap <leader>b 0
-
 " delete current buffer
 nnoremap <leader>d :bd<CR>
-
-" go to end of line
-imap <leader>e <esc>$
-nnoremap <leader>e $
-vnoremap <leader>e $
-
-" toggle fold
-nnoremap <leader>f za
 
 " toggle highlight
 nnoremap <silent> <Esc> :nohlsearch<Bar>:echo<CR>
@@ -464,8 +439,30 @@ nnoremap <silent> <Esc> :nohlsearch<Bar>:echo<CR>
 " toggle invisibles
 nnoremap <leader>i :set list!<CR>
 
+" allow movement within wapped lines
+nnoremap j gj
+nnoremap k gk
+noremap <Up> gk
+noremap <Down> gj
+inoremap <Down> <C-o>gj
+inoremap <Up>   <C-o>gk
+
+" provide hjkl movements in Insert mode via the <Alt> modifier key
+inoremap <A-h> <C-o>h
+inoremap <A-j> <C-o>j
+inoremap <A-k> <C-o>k
+inoremap <A-l> <C-o>l
+
+" goto start/end of line
+inoremap <A-0> <C-o>0
+inoremap <A-$> <C-o>$
+
+" move to the start of the next/prev word
+noremap <A-b> <C-o>b
+inoremap <A-w> <C-o>w
+
 " toggle number/relative number
-nnoremap <leader>n :call ToggleNumber()<CR>
+nnoremap <leader>r :call ToggleNumber()<CR>
 
 " set spell check
 map <leader>s :setlocal spell!<cr>
@@ -503,6 +500,10 @@ nnoremap <leader>/ <C-w>v
 " neovim horizontal window split
 nnoremap <leader>- <C-w>s
 
+" switch buffers
+nnoremap <leader>n :bnext<CR>
+nnoremap <leader>p :bprev<CR>
+
 " toggle relative line numbers
 function! ToggleNumber()
   if(&relativenumber == 1)
@@ -515,29 +516,29 @@ endfunction
 " }}
 
 " appearance {{
-"let $NVIM_TUI_ENABLE_TRUE_COLOR=1   " enable true color
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1  " change curser shape in insert mode
+"let $NVIM_TUI_ENABLE_TRUE_COLOR=1           " enable true color
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1          " change curser shape in insert mode
 syntax enable
 colorscheme papercolor
 set background=dark
-set colorcolumn=+1                   " increase the left margin by 1
-set cursorline                       " highlight current line
-set cursorcolumn                     " show vertical line
-set laststatus=2                     " show the status line
-set lazyredraw
+set colorcolumn=+1                           " increase the left margin by 1
+"set cursorline                               " highlight current line
+"set cursorcolumn                             " show vertical line
+set laststatus=2                             " show the status line
+set lazyredraw                               " don't update the display while executing macros
 set listchars+=tab:›\ "
 set listchars+=trail:·
 set listchars+=nbsp:␣
 set listchars+=extends:›
 set listchars+=precedes:‹
 set listchars+=eol:¶"
-set matchpairs=(:),[:],{:},<:>       " highlight matching tags
-set noshowmode                       " hide show mode in status line, using lightline plugin, not needed
-set nostartofline                    " keep the cursor on the same column
-set number                           " show line numbers
-set ruler                            " show the line and column number of the cursor
-set scrolloff=8                      " keep cursor 8 lines from top and bottom when page scrolls
-set showcmd                          " show partial command in the last line of the screen
+set matchpairs=(:),[:],{:},<:>               " highlight matching tags
+set noshowmode                               " hide show mode in status line, using lightline plugin, not needed
+set nostartofline                            " keep the cursor on the same column
+set number                                   " show line numbers
+set ruler                                    " show the line and column number of the cursor
+set scrolloff=8                              " keep cursor 8 lines from top and bottom when page scrolls
+"set showcmd                                  " show partial command in the last line of the screen
 " }}
 
 " behavior {{
@@ -546,7 +547,7 @@ set autowriteall                             " write on exit
 set backspace=indent,eol,start               " backspace over auto-indent, eol, start to join lines
 set clipboard=unnamed                        " use system clipboard
 set hidden                                   " hide buffers when abandoned, will allow movement to another without saving
-set history=100
+set history=100                              " keep some stuff in history
 set mouse=a
 set noerrorbells
 set novisualbell t_vb=
@@ -586,6 +587,10 @@ set wrap                                     " wrap text at window width
 set autoindent                               " copy indent from current line
 set shiftwidth=2                             " number of spaces to use for indent
 set smartindent                              " smart auto-indenting when starting a new line
+nnoremap <TAB> >>
+nnoremap <S-TAB> <<
+vnoremap <TAB> >gv
+vnoremap <S-TAB> <gv
 " }}
 
 " menus {{
@@ -681,6 +686,7 @@ call InitVimMarkdown()
 " augroup/java {{
 let g:JavaComplete_MavenRepositoryDisable = 1
 let g:java_highlight_functions="style"
+let java_allow_cpp_keywords = 1
 augroup filetype_java
   autocmd!
   autocmd BufNewFile,BufRead *.java set filetype=java
@@ -743,20 +749,20 @@ nnoremap <silent> <leader>// :vsp term://fish \| startinsert<CR>
 nnoremap <silent> <leader>-- :sp term://fish \| startinsert<CR>
 
 " navigate left to terminal/window
-tnoremap <leader>h <c-\><c-n>:call TermInsert("h")<cr>
-nnoremap <leader>h :call TermInsert("h")<cr>
+tnoremap <silent> <leader>h <c-\><c-n>:call TermInsert("h")<cr>
+nnoremap <silent> <leader>h :call TermInsert("h")<cr>
 
 " navigate right to terminal/window
-tnoremap <leader>l <c-\><c-n>:call TermInsert("l")<cr>
-nnoremap <leader>l :call TermInsert("l")<cr>
+tnoremap <silent> <leader>l <c-\><c-n>:call TermInsert("l")<cr>
+nnoremap <silent> <leader>l :call TermInsert("l")<cr>
 
 " navigate down to terminal/window
-tnoremap <leader>j <c-\><c-n>:call TermInsert("j")<cr>
-nnoremap <leader>j :call TermInsert("j")<cr>
+tnoremap <silent> <leader>j <c-\><c-n>:call TermInsert("j")<cr>
+nnoremap <silent> <leader>j :call TermInsert("j")<cr>
 
 " navigate up to terminal/window
-tnoremap <leader>k <c-\><c-n>:call TermInsert("k")<cr>
-nnoremap <leader>k :call TermInsert("k")<cr>
+tnoremap <silent> <leader>k <c-\><c-n>:call TermInsert("k")<cr>
+nnoremap <silent> <leader>k :call TermInsert("k")<cr>
 
 " force neovim terminal to enter insert mode
 function! TermInsert(direction)
