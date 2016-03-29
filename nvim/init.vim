@@ -15,15 +15,13 @@ function! InitGitGutter()
   let g:gitgutter_sign_column_always=0
   let g:gitgutter_enabled=1
   let g:gitgutter_max_signs=1000
-  let g:gitgutter_sign_added="\u271a"                 " heavy greek cross
-  let g:gitgutter_sign_modified="\u279c"              " heavy rounded-tip rightwards arrow
-  let g:gitgutter_sign_removed="\u2718"               " heavy ballot X
-  let g:gitgutter_sign_modified_removed="►"           " medium right facing triangle
+  let g:gitgutter_sign_added="\u271a"           " heavy greek cross
+  let g:gitgutter_sign_modified="\u279c"        " heavy rounded-tip rightwards arrow
+  let g:gitgutter_sign_removed="\u2718"         " heavy ballot X
+  let g:gitgutter_sign_modified_removed="►"     " medium right facing triangle
   let g:gitgutter_signs=1
   let g:gitgutter_highlight_lines=0
-
-  " gitgutter will use Sign Column to set its color, reload it
-  call gitgutter#highlight#define_highlights()
+  call gitgutter#highlight#define_highlights()  " gitgutter will use Sign Column to set its color, reload it
 endfunction
 "}}
 
@@ -31,7 +29,7 @@ endfunction
 Plug 'tpope/vim-fugitive'
 function! InitFugative()
   nnoremap <leader>gd :Gdiff<CR>
-  nmap gs :Gstatus<CR>gg<c-n>
+  nmap     <leader>gs :Gstatus<CR>gg<c-n>
 endfunction
 " }}
 
@@ -39,7 +37,7 @@ endfunction
 Plug 'junegunn/vim-easy-align'
 function! InitEasyAlign()
   vmap <Enter> <Plug>(EasyAlign)
-  nmap ga <Plug>(EasyAlign)
+  nmap ga      <Plug>(EasyAlign)
 endfunction
 " }}
 
@@ -61,10 +59,10 @@ Plug 'terryma/vim-multiple-cursors'
 "  5. 'A' will move the cursor to the end of the line for insertion
 " move cursor down/up within non-breaking lines
 function! InitMultipleCursors()
-  let g:multi_cursor_next_key='<C-n>'   " select word/next under cursor
-  let g:multi_cursor_prev_key='<C-m>'   " select previous word
-  let g:multi_cursor_skip_key='<C-x>'   " skip word
-  let g:multi_cursor_quit_key='<Esc>'   " quit multi select
+  let g:multi_cursor_next_key='<C-n>'            " select word/next under cursor
+  let g:multi_cursor_prev_key='<C-m>'            " select previous word
+  let g:multi_cursor_skip_key='<C-x>'            " skip word
+  let g:multi_cursor_quit_key='<Esc>'            " quit multi select
 
   let g:multi_cursor_use_default_mapping=0
   function! Multiple_cursors_before()
@@ -77,13 +75,20 @@ function! InitMultipleCursors()
 
 endfunction
 
-Plug 'tpope/vim-commentary'                                         " comment stuff
-Plug 'tpope/vim-eunuch'                                             " unix commands
-Plug 'tpope/vim-surround'                                           " surround with brackets, quotes, etc.
-Plug 'Raimondi/delimitMate'                                         " autocompletion for parens, brackets, etc.
+" tpope/vim-commentary {{
+Plug 'tpope/vim-commentary'                      " comment stuff
+function! InitCommentary()
+  nmap <leader>/ :Commentary <CR>
+  vmap <leader>/ :Commentary <CR>
+endfunction
 " }}
 
-" junegunn/fzf.vim {{
+Plug 'tpope/vim-eunuch'                          " unix commands
+Plug 'tpope/vim-surround'                        " surround with brackets, quotes, etc.
+Plug 'Raimondi/delimitMate'                      " autocompletion for parens, brackets, etc.
+" }}
+
+" junegunn/fzf {{
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
 "}}
 
@@ -96,6 +101,7 @@ function! InitFzfVim()
   "  let $FZF_DEFAULT_OPTS=' --inline-info'
   endif
 
+  " these colors are for dark
   function! s:fzf_statusline()
     " Override statusline as you like
     highlight fzf1 ctermfg=161 ctermbg=251
@@ -120,7 +126,7 @@ Plug 'junegunn/vim-pseudocl'
 Plug 'junegunn/vim-oblique'
 " }}
 
-" justinmk/vim-dirvish {{
+" justinmk/vim-dirvish (file explorer) {{
 Plug 'justinmk/vim-dirvish'
 function! InitDirvish()
   let g:loaded_netrwPlugin = 1
@@ -148,11 +154,11 @@ endfunction
 Plug 'rking/ag.vim'
 " }}
 
-" itspriddle/vim-marked (requires tabular to load first) {{
+" itspriddle/vim-marked (opens marked2 app) {{
 Plug 'itspriddle/vim-marked'
 " }}
 
-" plasticboy/vim-markdown {{
+" plasticboy/vim-markdown (requires tablular to load first) {{
 Plug 'plasticboy/vim-markdown'
 function! InitVimMarkdown()
   let g:vim_markdown_fenced_languages=['java=java', 'scala=scala']
@@ -161,6 +167,10 @@ endfunction
 
 " artur-shaik/vim-javacomplete2 {{
 Plug 'artur-shaik/vim-javacomplete2'
+function! InitVimJavaComplete()
+  let g:JavaComplete_UsePython3 = 1
+  let g:JavaComplete_MavenRepositoryDisable = 1
+endfunction
 " }}
 
 " benekastah/neomake {{
@@ -182,7 +192,6 @@ function! InitNeomake()
     \ }
 
   "autocmd! BufWritePost,BufReadPost * Neomake
-
 endfunction
 " }}
 
@@ -204,6 +213,7 @@ function InitDeoplete()
   let g:deoplete#enable_at_startup = 1
   let g:deoplete#enable_camel_case = 1
   let g:deoplete#auto_complete_delay = 100
+  set pumheight=15                                           " limit completion menu height
 
   " <TAB>: completion.
   imap <silent><expr> <TAB>
@@ -229,15 +239,15 @@ function InitDeoplete()
 endfunction
 " }}
 
-" vim-jp/vim-java {{
+" vim-jp/vim-java (better java syntax) {{
 Plug 'vim-jp/vim-java'
 " }}
 
 " colorschemes {{
-Plug 'chriskempson/base16-vim'                                      " imho, best color schemes around
+Plug 'chriskempson/base16-vim'
 Plug 'mhartington/oceanic-next'
 Plug 'nanotech/jellybeans.vim'
-Plug 'NLKNguyen/papercolor-theme'                                   " even better color scheme
+Plug 'NLKNguyen/papercolor-theme'
 " }}
 
 " ap/vim-buftabline {{
@@ -250,7 +260,7 @@ function! InitBuftabline()
 endfunction
 " }}
 
-" gcavallanti/vim-noscrollbar {{
+" gcavallanti/vim-noscrollbar (eye candy) {{
 Plug 'gcavallanti/vim-noscrollbar'
 " }}
 
@@ -295,7 +305,7 @@ function! InitLightline()
   endfunction
 
   function! MyReadonly()
-    return s:ftMatches('help') && &readonly ? "\ue0a2" : ''
+    return s:ftMatches('help') && &readonly ? "\uf0c1" : ''
   endfunction
 
   function! MyFugitive()
@@ -430,14 +440,8 @@ let mapleader="\<space>"
 set timeout
 set timeoutlen=200
 
-" delete current buffer
-nnoremap <leader>d :bd<CR>
-
 " toggle highlight
 nnoremap <silent> <Esc> :nohlsearch<Bar>:echo<CR>
-
-" toggle invisibles
-nnoremap <leader>i :set list!<CR>
 
 " allow movement within wapped lines
 nnoremap j gj
@@ -446,6 +450,9 @@ noremap <Up> gk
 noremap <Down> gj
 inoremap <Down> <C-o>gj
 inoremap <Up>   <C-o>gk
+
+" exit insert mode
+inoremap jj <ESC>
 
 " provide hjkl movements in Insert mode via the <Alt> modifier key
 inoremap <A-h> <C-o>h
@@ -460,6 +467,20 @@ inoremap <A-$> <C-o>$
 " move to the start of the next/prev word
 noremap <A-b> <C-o>b
 inoremap <A-w> <C-o>w
+
+" neovim vertical window split
+nnoremap <leader>/ <C-w>v
+
+" neovim horizontal window split
+nnoremap <leader>- <C-w>s
+
+" toggle invisibles
+nnoremap <leader>i :set list!<CR>
+
+" buffer management
+nnoremap <leader>d :bd<CR>
+nnoremap <leader>n :bnext<CR>
+nnoremap <leader>p :bprev<CR>
 
 " toggle number/relative number
 nnoremap <leader>r :call ToggleNumber()<CR>
@@ -494,15 +515,9 @@ noremap U <C-R>
 " tags jump to definition
 nnoremap <C-]> g<C-]>
 
-" neovim vertical window split
-nnoremap <leader>/ <C-w>v
-
-" neovim horizontal window split
-nnoremap <leader>- <C-w>s
-
-" switch buffers
-nnoremap <leader>n :bnext<CR>
-nnoremap <leader>p :bprev<CR>
+" python hosts for neovim
+let g:python_host_prog = '/usr/local/bin/python'
+let g:python3_host_prog = '/usr/local/bin/python3'
 
 " toggle relative line numbers
 function! ToggleNumber()
@@ -523,7 +538,7 @@ colorscheme papercolor
 set background=dark
 set colorcolumn=+1                           " increase the left margin by 1
 "set cursorline                               " highlight current line
-"set cursorcolumn                             " show vertical line
+set cursorcolumn                             " show vertical line
 set laststatus=2                             " show the status line
 set lazyredraw                               " don't update the display while executing macros
 set listchars+=tab:›\ "
@@ -548,9 +563,9 @@ set backspace=indent,eol,start               " backspace over auto-indent, eol, 
 set clipboard=unnamed                        " use system clipboard
 set hidden                                   " hide buffers when abandoned, will allow movement to another without saving
 set history=100                              " keep some stuff in history
-set mouse=a
-set noerrorbells
-set novisualbell t_vb=
+set mouse=a                                  " enable mouse for all modes
+set noerrorbells                             " do not ring bell for errors
+set visualbell t_vb=                         " no visual bells either
 set splitbelow                               " default horizontal split is below
 set splitright                               " default vertical split is to the right
 set virtualedit+=block                       " ctrl-v to select text in block mode, let me move cursor anywhere in buffer
@@ -673,6 +688,7 @@ call InitTagbar()
 call InitDirvish()
 call InitEasyAlign()
 call InitMultipleCursors()
+call InitCommentary()
 call InitFzfVim()
 call InitFugative()
 call InitGitGutter()
@@ -682,11 +698,11 @@ call InitIndentline()
 call InitLightline()
 call InitNeomake()
 call InitVimMarkdown()
+call InitVimJavaComplete()
 
 " augroup/java {{
-let g:JavaComplete_MavenRepositoryDisable = 1
 let g:java_highlight_functions="style"
-let java_allow_cpp_keywords = 1
+let g:java_allow_cpp_keywords = 1
 augroup filetype_java
   autocmd!
   autocmd BufNewFile,BufRead *.java set filetype=java
