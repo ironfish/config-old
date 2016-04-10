@@ -97,8 +97,9 @@ Plug 'junegunn/fzf.vim'
 function! InitFzfVim()
   " display finder info inline with query
   if has('nvim')
-  "  let $FZF_DEFAULT_COMMAND='ag -l -g ""'
-  "  let $FZF_DEFAULT_OPTS=' --inline-info'
+    " let $FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -l -g ""'
+    let $FZF_DEFAULT_COMMAND='ag -l -g ""'
+    let $FZF_DEFAULT_OPTS=' --inline-info'
   endif
 
   " these colors are for dark
@@ -107,7 +108,8 @@ function! InitFzfVim()
     highlight fzf1 ctermfg=161 ctermbg=251
     highlight fzf2 ctermfg=23 ctermbg=251
     highlight fzf3 ctermfg=237 ctermbg=251
-    setlocal statusline=%#fzf1#\ >\ %#fzf2#fz%#fzf3#f
+    let g:fzf_nvim_statusline = 0
+    " setlocal statusline=%#fzf1#\ >\ %#fzf2#fz%#fzf3#f
   endfunction
 
   autocmd! User FzfStatusLine call <SID>fzf_statusline()
@@ -129,17 +131,15 @@ Plug 'junegunn/vim-oblique'
 " justinmk/vim-dirvish (file explorer) {{
 Plug 'justinmk/vim-dirvish'
 function! InitDirvish()
-  let g:loaded_netrwPlugin = 1
-  let g:dirvish_hijack_netrw = 1
   command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
   command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
   nnoremap gx :call netrw#BrowseX(expand((exists("g:netrw_gx")? g:netrw_gx : '<cfile>')),netrw#CheckIfRemote())<cr>
   nnoremap <silent> - :Dirvish %:p:h<cr>
 
-  "augroup my_dirvish_event
-  "  autocmd!
-  "  autocmd FileType dirvish call fugitive#detect(@%)
-  "augroup END
+  augroup dirvish_autocmd
+    autocmd!
+    autocmd FileType dirvish call fugitive#detect(@%)
+  augroup END
 endfunction
 " }}
 
@@ -168,7 +168,9 @@ endfunction
 " artur-shaik/vim-javacomplete2 {{
 Plug 'artur-shaik/vim-javacomplete2'
 function! InitVimJavaComplete()
+  let g:JavaComplete_UseFQN = 1
   let g:JavaComplete_UsePython3 = 1
+  let g:JavaComplete_ServerAutoShutdownTime = 300
   let g:JavaComplete_MavenRepositoryDisable = 1
 endfunction
 " }}
@@ -211,8 +213,24 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'Shougo/deoplete.nvim'
 function InitDeoplete()
   let g:deoplete#enable_at_startup = 1
+  let g:deoplete#enable_ignore_case = 1
+  let g:deoplete#enable_smart_case = 1
   let g:deoplete#enable_camel_case = 1
-  let g:deoplete#auto_complete_delay = 100
+  let g:deoplete#enable_refresh_always = 1
+  let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+  let g:deoplete#omni#input_patterns.java = [
+              \'[^. \t0-9]\.\w*',
+              \'[^. \t0-9]\->\w*',
+              \'[^. \t0-9]\::\w*',
+              \]
+  let g:deoplete#omni#input_patterns.jsp = ['[^. \t0-9]\.\w*']
+  let g:deoplete#ignore_sources = {}
+  let g:deoplete#ignore_sources._ = ['javacomplete2']
+  call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
+
+"  let g:deoplete#enable_at_startup = 1
+"  let g:deoplete#enable_camel_case = 1
+"  let g:deoplete#auto_complete_delay = 100
   set pumheight=15                                           " limit completion menu height
 
   " <TAB>: completion.
@@ -248,6 +266,8 @@ Plug 'chriskempson/base16-vim'
 Plug 'mhartington/oceanic-next'
 Plug 'nanotech/jellybeans.vim'
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'w0ng/vim-hybrid'
+Plug 'kristijanhusak/vim-hybrid-material'
 " }}
 
 " ap/vim-buftabline {{
@@ -257,6 +277,9 @@ function! InitBuftabline()
   let g:buftabline_show=2        " always show buffer tabline
   let g:buftabline_numbers=1     " the buffer number is shown in the buffer label
   let g:buftabline_separators=1  " draw thin vertical line between buffer tabs
+  " hi! BufTabLineCurrent guifg=#1c1c1c guibg=#b5bd68
+  " hi! BufTabLineFill guibg=#37474f
+  " hi! BufTabLineHidden guifg=#37474f guibg=#37474f
 endfunction
 " }}
 
@@ -268,21 +291,33 @@ Plug 'gcavallanti/vim-noscrollbar'
 Plug 'itchyny/lightline.vim'
 function! InitLightline()
   let g:lightline = {
-    \ 'colorscheme': 'PaperColor',
+    \ 'colorscheme': 'Hybrid',
     \ 'active': {
-    \   'left': [ [ 'mode', 'paste' ], [ 'gitgutter', 'fugitive', 'filename' ] ],
-    \   'right': [ [ 'trailing', 'indentation', 'lineinfo' ], [ 'tags', 'percent' ], [ 'noscrollbar', 'fileformat', 'fileencoding', 'filetype'] ]
+    \   'left': [
+    \     ['mode', 'paste'],
+    \     ['gitgutter', 'fugitive'],
+    \     ['readonly', 'filename']
+    \   ],
+    \   'right': [
+    \     ['trailing', 'indentation'],
+    \     ['percent', 'lineinfo'],
+    \     ['fileformat', 'fileencoding', 'filetype'],
+    \     ['noscrollbar', 'tags']
+    \   ]
     \ },
     \ 'component_function': {
+    \   'mode': 'MyMode',
     \   'gitgutter': 'MyGitGutter',
     \   'fugitive': 'MyFugitive',
+    \   'readonly': 'MyReadonly',
     \   'filename': 'MyFilename',
-    \   'lineinfo': 'MyLineinfo',
     \   'tags': 'MyGutenTags',
+    \   'noscrollbar': 'MyNoScrollbar',
     \   'fileformat': 'MyFileformat',
     \   'fileencoding': 'MyFileencoding',
+    \   'percent': 'MyPercent',
     \   'filetype': 'MyFiletype',
-    \   'noscrollbar': 'MyNoScrollbar',
+    \   'lineinfo': 'MyLineinfo',
     \ },
     \ 'component_expand': {
     \   'trailing': 'TrailingSpaceWarning',
@@ -290,56 +325,19 @@ function! InitLightline()
     \ },
     \ 'component_type': {
     \   'trailing': 'warning',
-    \   'indentation': 'warining',
+    \   'indentation': 'warning',
     \ },
     \ 'separator': { 'left': '', 'right': '' },
-    \ 'subseparator': { 'left': "\u2502", 'right': "\u2502" }
+    \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
     \ }
 
-  function! MyNoScrollbar()
-    return noscrollbar#statusline(20,'■','◫',['◧'],['◨'])
-  endfunction
-
-  function! MyModified()
-    return  s:ftMatches('help') ? '' : &modified ? '+' : &modifiable ? '' : '-'
-  endfunction
-
-  function! MyReadonly()
-    return s:ftMatches('help') && &readonly ? "\uf0c1" : ''
-  endfunction
-
-  function! MyFugitive()
-    if expand('%:t') !~? 'Tagbar' && &ft !~? 'dirvish' && exists('*fugitive#head')
-      let mark = "\uf126"  " edit here for cool mark
-      let _ = fugitive#head()
-      return strlen(_) ? mark . ' ' . _ : ''
-    endif
-  endfunction
-
-  function! MyLineinfo()
-    return printf("\uf0cb %3d:%-2d", line('.'), col('.'))
-  endfunction
-
-  function! MyFileformat()
-    return winwidth(0) > 70 ? &fileformat : ''
-  endfunction
-
-  function! MyFileencoding()
-    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
-  endfunction
-
-  function! MyFiletype()
-    return winwidth(0) > 70 ? (strlen(&filetype) ? "\uf15c" . ' ' . &filetype : 'no ft') : ''
-  endfunction
-
-  function! MyFilename()
+  function! MyMode()
     let fname = expand('%:t')
-    let path = expand('%:F')
-    return fname == '__Tagbar__' ? '' :
-      \ &ft == 'dirvish' ? path :
-      \ ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
-      \ ('' != fname ? fname : '[No Name]') .
-      \ ('' != MyModified() ? ' ' . MyModified() : '')
+    return fname == '__Tagbar__' ? 'Tagbar' :
+      \ &ft == 'fzf' ? 'FZF' :
+      \ &ft == 'dirvish' ? 'DIRVISH' :
+      \ &ft == 'help' ? 'HELP' :
+      \ winwidth(0) > 60 ? lightline#mode() : ''
   endfunction
 
   function! MyGitGutter()
@@ -363,12 +361,92 @@ function! InitLightline()
     return join(ret, ' ')
   endfunction
 
+  function! MyFugitive()
+    try
+      if expand('%:t') !~? 'Tagbar' && &ft !~? 'dirvish\|help' && exists('*fugitive#head')
+        let mark = "\ue220"  " edit here for cool mark
+        let _ = fugitive#head()
+        return strlen(_) ? mark.' '._ : ''
+      endif
+    catch
+    endtry
+    return ''
+  endfunction
+
+  function! MyReadonly()
+    return s:ftMatches('help') && &readonly ? "\ue138" : ''
+  endfunction
+
+  function! MyFilename()
+    let fname = expand('%:t')
+    let path = expand('%:F')
+    return fname == '__Tagbar__' ? g:lightline.fname :
+      \ &ft == 'fzf' ? '' :
+      \ &ft == 'dirvish' ? path :
+      \ ('' != fname ? pathshorten(path) : '[No Name]') .
+      \ ('' != MyModified() ? ' ' . MyModified() : '')
+  endfunction
+
   function! MyGutenTags()
-    if expand('%:t') !~? 'Tagbar' && &ft !~? 'dirvish' && exists('*gutentags#statusline')
-      let mark = "\uf02b"  " edit here for cool mark
-      let _ = gutentags#statusline('....')
-      return strlen(_) ? mark . ' ' . _ : mark
-    endif
+    let fname = expand('%:t')
+    if fname == '__Tagbar__' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|help\|term' | return '' | endif
+    if &buftype == 'terminal' | return '' | endif
+    let mark = "\ue817"
+    let _ = gutentags#statusline('+')
+    return strlen(_) ? _ . ' ' . mark . ' ' : mark . ' '
+  endfunction
+
+  function! MyNoScrollbar()
+    let fname = expand('%:t')
+    if fname == '__Tagbar__' | return '' | endif
+    if &ft =~ 'dirvish\|fzf' | return '' | endif
+    if &buftype == 'terminal' | return '' | endif
+    return noscrollbar#statusline(10,'■','◫',['◧'],['◨'])
+  endfunction
+
+  function! MyFileformat()
+    let fname = expand('%:t')
+    if fname == '__Tagbar__' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|help' | return '' | endif
+    if &buftype == 'terminal' | return '' | endif
+    return winwidth(0) > 70 ? &fileformat : ''
+  endfunction
+
+  function! MyFileencoding()
+    let fname = expand('%:t')
+    if fname == '__Tagbar__' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|help' | return '' | endif
+    if &buftype == 'terminal' | return '' | endif
+    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+  endfunction
+
+  function! MyFiletype()
+    let fname = expand('%:t')
+    if fname == '__Tagbar__' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|help' | return '' | endif
+    if &buftype == 'terminal' | return '' | endif
+    return winwidth(0) > 70 ? (strlen(&filetype) ?  &filetype . ' ' . "\ue12d" . '' : 'no ft') : ''
+  endfunction
+
+ function! MyPercent()
+   let fname = expand('%:t')
+   if fname == '__Tagbar__' | return '' | endif
+   if &ft =~ 'dirvish\|fzf' | return '' | endif
+    if &buftype == 'terminal' | return '' | endif
+   return printf("%1d%%", float2nr(round(str2float(line('.'))/str2float(line('$'))*100)))
+ endfunction
+
+  function! MyLineinfo()
+    let fname = expand('%:t')
+    if fname == '__Tagbar__' | return '' | endif
+    if &ft =~ 'dirvish\|fzf' | return '' | endif
+    if &buftype == 'terminal' | return '' | endif
+    return printf("%1d:%-1d \ue862 ", line('.'), col('.'))
+  endfunction
+
+  function! MyModified()
+    return  s:ftMatches('help') ? '' : &modified ? '+' : &modifiable ? '' : '-'
   endfunction
 
   " credit to https://github.com/obxhdx/vimfiles/blob/master/lightline.vim
@@ -385,6 +463,13 @@ function! InitLightline()
     return (l:tabs != 0 && l:spaces != 0) ? '» mixed-indent[' . tabs . ']' : ''
   endfunction
 
+  let g:tagbar_status_func = 'TagbarStatusFunc'
+
+  function! TagbarStatusFunc(current, sort, fname, ...) abort
+      let g:lightline.fname = a:fname
+    return lightline#statusline(0)
+  endfunction
+
   au VimEnter * let g:total_width = winwidth(0)
 
   function! s:ftMatches(ft_name)
@@ -396,6 +481,7 @@ function! InitLightline()
   function! s:update()
     call TrailingSpaceWarning()
     call MixedIndentSpaceWarning()
+    call MyFugitive()
     call MyGutenTags()
     call MyNoScrollbar()
     call lightline#update()
@@ -531,14 +617,20 @@ endfunction
 " }}
 
 " appearance {{
-"let $NVIM_TUI_ENABLE_TRUE_COLOR=1           " enable true color
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1           " enable true color
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1          " change curser shape in insert mode
 syntax enable
-colorscheme papercolor
 set background=dark
+" let g:hybrid_custom_term_colors = 1
+" let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
+" colorscheme hybrid
+" colorscheme papercolor
+colorscheme hybrid_material
+let g:enable_bold_font = 1
+"colorscheme jellybeans
 set colorcolumn=+1                           " increase the left margin by 1
-"set cursorline                               " highlight current line
-set cursorcolumn                             " show vertical line
+set nocursorline                             " highlight current line
+set nocursorcolumn                           " show vertical line
 set laststatus=2                             " show the status line
 set lazyredraw                               " don't update the display while executing macros
 set listchars+=tab:›\ "
@@ -553,7 +645,7 @@ set nostartofline                            " keep the cursor on the same colum
 set number                                   " show line numbers
 set ruler                                    " show the line and column number of the cursor
 set scrolloff=8                              " keep cursor 8 lines from top and bottom when page scrolls
-"set showcmd                                  " show partial command in the last line of the screen
+set showcmd                                  " don't show, in OSX with lazyredraw very slow
 " }}
 
 " behavior {{
@@ -569,6 +661,7 @@ set visualbell t_vb=                         " no visual bells either
 set splitbelow                               " default horizontal split is below
 set splitright                               " default vertical split is to the right
 set virtualedit+=block                       " ctrl-v to select text in block mode, let me move cursor anywhere in buffer
+" set virtualedit=all                          " allow the cursot to go in to invalid places
 set whichwrap=h,l,[<]>],[<\>]                " make cursor keys wrap (] and \ are for right and left arrows
 set tags=./tags;/                            " tags location
 " }}
@@ -593,7 +686,7 @@ set linebreak                                " wrap long lines at a character
 set nojoinspaces                             " don't join lines with two spaces at the end of sentences
 set nolist                                   " do not show whitespace characters on start
 set showbreak=↪                              " line break character for wrapped lines
-set synmaxcol=132                            " scrolling can be very slow for long wraps (i.e. columns)
+set synmaxcol=200                            " scrolling can be very slow for long wraps (i.e. columns)
 set textwidth=0                              " no hard breaks unless i press enter
 set wrap                                     " wrap text at window width
 " }}
@@ -609,6 +702,7 @@ vnoremap <S-TAB> <gv
 " }}
 
 " menus {{
+set complete+=kspell                         " turn on tab completion for spelling
 set showfulltag                              " show the whole tag, not just the function name
 set wildignore+=tags                         " things to ignore
 set wildmenu                                 " set menu for tab key
@@ -627,7 +721,6 @@ set wrapscan                                 " set search to wrap lines
 " }}
 
 " spelling {{
-set complete+=kspell                         " trun on tab completion for spelling
 set dictionary+=/usr/share/dict/words        " unix/osx dictionary
 set spellfile=$HOME/.nvim/spell/en.utf8.add  " spelling whitelist
 set spelllang=en_us                          " spelling language
@@ -758,6 +851,11 @@ augroup END
 " }}
 
 " neovim/terminal {{
+highlight TermCursor ctermfg=LightRed guifg=#cc6666
+
+" Exclude from buffer list
+autocmd TermOpen * set nobuflisted
+
 " neovim vertical terminal split
 nnoremap <silent> <leader>// :vsp term://fish \| startinsert<CR>
 
@@ -793,37 +891,71 @@ if exists(':terminal')
   " allow terminal buffer size to be very large
   let g:terminal_scrollback_buffer_size = 100000
 
+  " PaperColor
   "black normal/bright
-  let g:terminal_color_0="#2c2c2c"
-  let g:terminal_color_8="#545454"
+  " let g:terminal_color_0="#2c2c2c"
+  " let g:terminal_color_8="#545454"
 
   "red normal/bright
-  let g:terminal_color_1="#c62828"
-  let g:terminal_color_9="#ef5350"
+  " let g:terminal_color_1="#c62828"
+  " let g:terminal_color_9="#ef5350"
 
   "green normal/bright
-  let g:terminal_color_2="#558b2f"
-  let g:terminal_color_10="#8bc34a"
+  " let g:terminal_color_2="#558b2f"
+  " let g:terminal_color_10="#8bc34a"
 
   "yellow normal/bright
-  let g:terminal_color_3="#f9a825"
-  let g:terminal_color_11="#ffeb3b"
+  " let g:terminal_color_3="#f9a825"
+  " let g:terminal_color_11="#ffeb3b"
 
   "blue normal/bright
-  let g:terminal_color_4="#1565c0"
-  let g:terminal_color_12="#64b5f6"
+  " let g:terminal_color_4="#1565c0"
+  " let g:terminal_color_12="#64b5f6"
 
   "magenta normal/bright
-  let g:terminal_color_5="#6a1e9a"
-  let g:terminal_color_13="#ba68c8"
+  " let g:terminal_color_5="#6a1e9a"
+  " let g:terminal_color_13="#ba68c8"
 
   "cyan normal/bright
-  let g:terminal_color_6="#00838f"
-  let g:terminal_color_14="#26c6da"
+  " let g:terminal_color_6="#00838f"
+  " let g:terminal_color_14="#26c6da"
 
   "white normal/bright
-  let g:terminal_color_7="#f2f2f2"
-  let g:terminal_color_15="#e0e0e0"
+  " let g:terminal_color_7="#f2f2f2"
+  " let g:terminal_color_15="#e0e0e0"
+
+  " vim-hybrid-material
+  "black normal/bright
+  let g:terminal_color_0="#263238"
+  let g:terminal_color_8="#707880"
+
+  "red normal/bright
+  let g:terminal_color_1="#5f0700"
+  let g:terminal_color_9="#cc6666"
+
+  "green normal/bright
+  let g:terminal_color_2="#b5bd68"
+  let g:terminal_color_10="#b5bd68"
+
+  "yellow normal/bright
+  let g:terminal_color_3="#f0c674"
+  let g:terminal_color_11="#"
+
+  "blue normal/bright
+  let g:terminal_color_4="#000c5f"
+  let g:terminal_color_12="#81a2be"
+
+  "magenta normal/bright
+  let g:terminal_color_5="#5f125f"
+  let g:terminal_color_13="#b294bb"
+
+  "cyan normal/bright
+  let g:terminal_color_6="#005f5f"
+  let g:terminal_color_14="#8abeb7"
+
+  "white normal/bright
+  let g:terminal_color_7="#ecefef"
+  let g:terminal_color_15="#ffffff"
 endif
 " }}
 
