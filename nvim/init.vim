@@ -102,14 +102,29 @@ function! InitFzfVim()
     let $FZF_DEFAULT_OPTS=' --inline-info'
   endif
 
-  " these colors are for dark
+  " Customize fzf colors to match your color scheme
+  let g:fzf_colors =
+  \ { 'fg':      ['fg', 'Normal'],
+    \ 'bg':      ['bg', 'Normal'],
+    \ 'hl':      ['fg', 'Comment'],
+    \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+    \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+    \ 'hl+':     ['fg', 'Statement'],
+    \ 'info':    ['fg', 'PreProc'],
+    \ 'prompt':  ['fg', 'Conditional'],
+    \ 'pointer': ['fg', 'Exception'],
+    \ 'marker':  ['fg', 'Keyword'],
+    \ 'spinner': ['fg', 'Label'],
+    \ 'header':  ['fg', 'Comment'] }
+
+" these colors are for dark
   function! s:fzf_statusline()
     " Override statusline as you like
     highlight fzf1 ctermfg=161 ctermbg=251
     highlight fzf2 ctermfg=23 ctermbg=251
     highlight fzf3 ctermfg=237 ctermbg=251
     let g:fzf_nvim_statusline = 0
-    " setlocal statusline=%#fzf1#\ >\ %#fzf2#fz%#fzf3#f
+    setlocal statusline=%#fzf1#\ >\ %#fzf2#fz%#fzf3#f
   endfunction
 
   autocmd! User FzfStatusLine call <SID>fzf_statusline()
@@ -117,8 +132,99 @@ function! InitFzfVim()
   nnoremap <silent> <leader>f :Files<CR>
   nnoremap <silent> <leader>b :Buffers<CR>
   nnoremap <silent> <leader>t :BTags<CR>
+
+  function! s:function(name)
+    return function(a:name)
+  endfunction
+
+  function! s:cmdlist()
+    let commands = [
+          \ "Name                Description",
+          \ "Buffer_Delete       Delete the current buffer.",
+          \ "Buffer_First        Go to the first buffer in the buffer list.",
+          \ "Buffer_Last         Go to the last buffer in the buffer list.",
+          \ "Buffer_Next         Go to the next buffer in the buffer list.",
+          \ "Buffer_Previous     Go to the previous in the buffer list.",
+          \ "Dirvish             Open Dirvish file browser.",
+          \ "File_Mkdir          Create a directory, defaulting to the parent of the current file.",
+          \ "File_New            Create a new file, defaulting to the parent directory of the current file.",
+          \ "File_Rename         Rename the current file.",
+          \ "Git_Diff            Display Git difference on current file.",
+          \ "Git_Log             Display Git log.",
+          \ "Git_Status          Display current Git status.",
+          \ "Github_Browse       Browse current file on Github.",
+          \ "List_Buffers        Fuzzy find the current list of buffers.",
+          \ "List_Files          Fuzzy find files from the current directory and below.",
+          \ "Markdown_Toc        Display table of contents for markdown file.",
+          \ "Quit                Close the current buffer, window, tab.",
+          \ "Quit_all            Close all buffers, windows, tabs and quit vim.",
+          \ "Search_Files        Search in files this directory and below.",
+          \ "Save                Save current buffer.",
+          \ "Split_Delete        Delete the active split.",
+          \ "Split_Horizontal    Split the current window horizontally.",
+          \ "Split_Vertical      Split the current vertically.",
+          \ "Term_Horizontal     Open terminal session horizontally.",
+          \ "Term_Vertical       Open terminal session vertically.",
+          \ "Toggle_Invisibles   Toggle invisible characters.",
+          \ "Toggle_Numbers      Toggle between relative and regular line numbers.",
+          \ "Toggle_Spelling     Toggle spelling.",
+          \ "Toggle_Tagbar       Toggle the Tagbar plugin."]
+    return commands
+  endfunction
+
+  function! s:excmd(cmd)
+    let cmd = matchstr(a:cmd, '^\w*')
+    if cmd ==? "Toggle_Tagbar"     | call feedkeys(":TagbarToggle\<CR>")                  | endif
+    if cmd ==? "Toggle_Numbers"    | call ToggleNumber()                                  | endif
+    if cmd ==? "Toggle_Spelling"   | call feedkeys(":setlocal spell!\<CR>")               | endif
+    if cmd ==? "Toggle_Invisibles" | call feedkeys(":set list!\<CR>")                     | endif
+    if cmd ==? "Term_Horizontal"   | call feedkeys(":sp term://fish \|startinsert\<CR>")  | endif
+    if cmd ==? "Term_Vertical"     | call feedkeys(":vsp term://fish \|startinsert\<CR>") | endif
+    if cmd ==? "Split_Delete"      | q                                   | endif
+    if cmd ==? "Split_Horizontal"  | sp                                  | endif
+    if cmd ==? "Split_Vertical"    | vsp                                 | endif
+    if cmd ==? "Search_Files"      | call feedkeys(':Ag ')               | endif
+    if cmd ==? "Save"              | w!                                  | endif
+    if cmd ==? "Quit"              | q                                   | endif
+    if cmd ==? "Quit_all"          | qall                                | endif
+    if cmd ==? "Markdown_Toc"      | call feedkeys(":Toc\<CR>")          | endif
+    if cmd ==? "List_Files"        | call feedkeys(":Files\<CR>")        | endif
+    if cmd ==? "List_Buffers"      | call feedkeys(":Buffers\<CR>")      | endif
+    if cmd ==? "Github_Browse"     | Gbrowse                             | endif
+    if cmd ==? "Git_Status"        | Gstatus                             | endif
+    if cmd ==? "Git_Log"           | call feedkeys(":GV\<CR>")           | endif
+    if cmd ==? "Git_Diff"          | Gdiff                               | endif
+    if cmd ==? "File_Rename"       | call feedkeys(':Rename ')           | endif
+    if cmd ==? "File_Mkdir"        | call feedkeys(':Mkdir ')            | endif
+    if cmd ==? "File_New"          | call feedkeys(':edit ')             | endif
+    if cmd ==? "Dirvish"           | Dirvish %:p:h                       | endif
+    if cmd ==? "Buffer_Previous"   | bprevious                           | endif
+    if cmd ==? "Buffer_Next"       | bnext                               | endif
+    if cmd ==? "Buffer_Last"       | blast                               | endif
+    if cmd ==? "Buffer_First"      | bfirst                              | endif
+    if cmd ==? "Buffer_Delete"     | bw                                  | endif
+  endfunction
+
+  " nnoremap <silent> <Leader><leader> :call fzf#run({
+  " \   'source':  <sid>cmdlist(),
+  " \   'sink':    function('<sid>excmd'),
+  " \   'options': '--header-lines 1 --prompt "Commands> "',
+  " \   'down':    len(<sid>cmdlist()) + 1
+  " \ })<cr>
+
+  function! s:commands()
+    call fzf#run({
+    \ 'source':  s:cmdlist(),
+    \ 'options': '--header-lines 1 -x --prompt "Commands> "',
+    \ 'down':    len(s:cmdlist()) + 1,
+    \ 'sink':    function('s:excmd')})
+  endfunction
+  command! Cmds call s:commands()
+  nnoremap <silent> <leader><leader> :Cmds<CR> 
 endfunction
 " }}
+
+Plug 'junegunn/gv.vim'
 
 " junegunn/vim-pseudocl {{
 Plug 'junegunn/vim-pseudocl'
@@ -136,10 +242,10 @@ function! InitDirvish()
   nnoremap gx :call netrw#BrowseX(expand((exists("g:netrw_gx")? g:netrw_gx : '<cfile>')),netrw#CheckIfRemote())<cr>
   nnoremap <silent> - :Dirvish %:p:h<cr>
 
-  augroup dirvish_autocmd
-    autocmd!
-    autocmd FileType dirvish call fugitive#detect(@%)
-  augroup END
+  " augroup dirvish_autocmd
+  "   autocmd!
+  "   autocmd FileType dirvish call fugitive#detect(@%)
+  " augroup END
 endfunction
 " }}
 
@@ -179,6 +285,7 @@ endfunction
 Plug 'benekastah/neomake'
 function! InitNeomake()
   let g:neomake_open_list = 1
+  let g:neomake_verbose = 2
   let g:neomake_scala_enabled_makers = ['scalastyle']
   let g:neomake_python_enabled_makers = ['pep8', 'flake8']
   let g:neomake_python_pep8_maker = {
@@ -187,7 +294,7 @@ function! InitNeomake()
     \ }
   let g:neomake_sbt_maker = {
     \ 'exe': 'sbt',
-    \ 'args': ['-Dsbt.log.noformat=true', '~compile'],
+    \ 'args': ['-Dsbt.log.noformat=true', 'compile'],
     \ 'errorformat':
     \ '%E\ %#[error]\ %f:%l:\ %m,%C\ %#[error]\ %p^,%-C%.%#,%Z,%W\ %#[warn]\ %f:%l:\ %m,%C\ %#[warn]\ %p^,%-C%.%#,%Z,%-G%.%#',
     \ 'buffer_output': 1
@@ -621,15 +728,11 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR=1           " enable true color
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1          " change curser shape in insert mode
 syntax enable
 set background=dark
-" let g:hybrid_custom_term_colors = 1
-" let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
-" colorscheme hybrid
-" colorscheme papercolor
-colorscheme hybrid_material
-let g:enable_bold_font = 1
-"colorscheme jellybeans
+let g:hybrid_custom_term_colors = 1
+let g:hybrid_reduced_contrast = 1            " Remove this line if using the default palette.
+colorscheme hybrid
 set colorcolumn=+1                           " increase the left margin by 1
-set nocursorline                             " highlight current line
+set nocursorline                             " killls performance, turn it off 
 set nocursorcolumn                           " show vertical line
 set laststatus=2                             " show the status line
 set lazyredraw                               " don't update the display while executing macros
@@ -639,7 +742,7 @@ set listchars+=nbsp:␣
 set listchars+=extends:›
 set listchars+=precedes:‹
 set listchars+=eol:¶"
-set matchpairs=(:),[:],{:},<:>               " highlight matching tags
+"set matchpairs=(:),[:],{:},<:>               " highlight matching tags
 set noshowmode                               " hide show mode in status line, using lightline plugin, not needed
 set nostartofline                            " keep the cursor on the same column
 set number                                   " show line numbers
@@ -657,7 +760,7 @@ set hidden                                   " hide buffers when abandoned, will
 set history=100                              " keep some stuff in history
 set mouse=a                                  " enable mouse for all modes
 set noerrorbells                             " do not ring bell for errors
-set visualbell t_vb=                         " no visual bells either
+set visualbell                               " no visual bells either
 set splitbelow                               " default horizontal split is below
 set splitright                               " default vertical split is to the right
 set virtualedit+=block                       " ctrl-v to select text in block mode, let me move cursor anywhere in buffer
@@ -687,7 +790,7 @@ set nojoinspaces                             " don't join lines with two spaces 
 set nolist                                   " do not show whitespace characters on start
 set showbreak=↪                              " line break character for wrapped lines
 set synmaxcol=200                            " scrolling can be very slow for long wraps (i.e. columns)
-set textwidth=0                              " no hard breaks unless i press enter
+set textwidth=132                            " no hard breaks unless i press enter
 set wrap                                     " wrap text at window width
 " }}
 
@@ -734,25 +837,9 @@ set tabstop=2                                " set tab width
 " }}
 
 " directories {{
-" backup file
-set backup
-" backup directory
-set backupdir=~/dotfiles/tmp/nvim-backup//
-" backup before overwriting original file
-set writebackup
-if !isdirectory(expand(&backupdir))
-  call mkdir(expand(&backupdir), "p")
-endif
-
-" swap directory
-set directory=~/dotfiles/tmp/nvim-swap//
-" don't warn when there is existing swap file
-set shortmess+=A
-" time in millis until next swap file is written
-set updatetime=500
-if !isdirectory(expand(&directory))
-  call mkdir(expand(&directory), "p")
-endif
+set nobackup
+set nowritebackup
+set noswapfile
 
 " undo directory
 set undodir=~/dotfiles/tmp/nvim-undo//
@@ -926,36 +1013,69 @@ if exists(':terminal')
 
   " vim-hybrid-material
   "black normal/bright
-  let g:terminal_color_0="#263238"
-  let g:terminal_color_8="#707880"
+  " let g:terminal_color_0="#263238"
+  " let g:terminal_color_8="#707880"
 
   "red normal/bright
-  let g:terminal_color_1="#5f0700"
+  " let g:terminal_color_1="#5f0700"
+  " let g:terminal_color_9="#cc6666"
+
+  "green normal/bright
+  " let g:terminal_color_2="#b5bd68"
+  " let g:terminal_color_10="#b5bd68"
+
+  "yellow normal/bright
+  " let g:terminal_color_3="#f0c674"
+  " let g:terminal_color_11="#"
+
+  "blue normal/bright
+  " let g:terminal_color_4="#000c5f"
+  " let g:terminal_color_12="#81a2be"
+
+  "magenta normal/bright
+  " let g:terminal_color_5="#5f125f"
+  " let g:terminal_color_13="#b294bb"
+
+  "cyan normal/bright
+  " let g:terminal_color_6="#005f5f"
+  " let g:terminal_color_14="#8abeb7"
+
+  "white normal/bright
+  " let g:terminal_color_7="#ecefef"
+  " let g:terminal_color_15="#ffffff"
+
+  " vim-hybrid
+  "black normal/bright
+  let g:terminal_color_0="#2d3c46"
+  let g:terminal_color_8="#425059"
+
+  "red normal/bright
+  let g:terminal_color_1="#a54242"
   let g:terminal_color_9="#cc6666"
 
   "green normal/bright
-  let g:terminal_color_2="#b5bd68"
-  let g:terminal_color_10="#b5bd68"
+  let g:terminal_color_2="#8c9440"
+  let g:terminal_color_10="#b5bd67"
 
   "yellow normal/bright
-  let g:terminal_color_3="#f0c674"
-  let g:terminal_color_11="#"
+  let g:terminal_color_3="#de935f"
+  let g:terminal_color_11="#f0c674"
 
   "blue normal/bright
-  let g:terminal_color_4="#000c5f"
+  let g:terminal_color_4="#5f819d"
   let g:terminal_color_12="#81a2be"
 
   "magenta normal/bright
-  let g:terminal_color_5="#5f125f"
-  let g:terminal_color_13="#b294bb"
+  let g:terminal_color_5="#85678f"
+  let g:terminal_color_13="#b294ba"
 
   "cyan normal/bright
-  let g:terminal_color_6="#005f5f"
+  let g:terminal_color_6="#5e8d87"
   let g:terminal_color_14="#8abeb7"
 
   "white normal/bright
-  let g:terminal_color_7="#ecefef"
-  let g:terminal_color_15="#ffffff"
+  let g:terminal_color_7="#6c7a80"
+  let g:terminal_color_15="#c5c8c6"
 endif
 " }}
 

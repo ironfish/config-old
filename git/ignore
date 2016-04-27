@@ -42,3 +42,4 @@ json-output.txt
 # Development
 .ensime
 *.log
+typesafe.properties

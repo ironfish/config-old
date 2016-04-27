@@ -14,6 +14,9 @@ set -x DOCKER_TLS_VERIFY 1
 set -x DOCKER_MACHINE_NAME "default"
 set -x SBT_OPTS "-Xms512M -Xmx2048M -Xss6M -XX:MaxMetaspaceSize=512m -XX:+CMSClassUnloadingEnabled"
 
+# setting for sushi theme
+set -x theme_complete_path "yes"
+
 # app aliases
 # alias nvim 'env NVIM_TUI_ENABLE_TRUE_COLOR=1 nvim'
 
@@ -22,30 +25,39 @@ alias ef 'nvim ~/GitHub/config/fish/config.fish'
 alias en 'nvim ~/GitHub/config/nvim/init.vim'
 
 # cd aliases
-alias ... 'cd ../..'
-alias .... 'cd ../../..'
+alias ...   'cd ../..'
+alias ....  'cd ../../..'
 alias ..... 'cd ../../../..'
-alias cdg 'cd ~/GitHub'
-alias cdgc 'cd ~/GitHub/cinnamon'
-alias cdc 'cd ~/GitHub/config'
+alias cdg   'cd ~/GitHub'
+alias cdgc  'cd ~/GitHub/cinnamon'
+alias cdc   'cd ~/GitHub/config'
 
 # docker aliases
-alias dmstart 'docker-machine start default'
-alias dmstop 'docker-machine stop default'
-alias dmssh 'docker-machine ssh default'
-alias dmenv 'docker-machine env default'
+alias dmstart 'echo "docker-machine start default"; docker-machine start default'
+alias dmstop  'echo "docker-machine stop default"; docker-machine stop default'
+alias dmssh   'echo "docker-machine ssh default"; docker-machine ssh default'
+alias dmenv   'echo "docker-machine env default"; docker-machine env default'
 
 # git aliases
-alias ga 'git add .'
-alias gc 'git commit -m'
-alias gcd 'git checkout -b'
-alias gp 'git pull'
-alias gpo 'git push origin'
-alias gs 'git status'
+alias ga='echo "git add ."; git add .'
+alias gba='echo "git branch -a"; git branch -a'
+alias gc='git commit -m'
+alias gcd='git checkout -b'
+alias gl="clear ;and git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gp='echo "git pull"; git pull'
+alias gpo='git push origin'
+alias gs='echo "git status"; git status'
+alias gt='echo "git tag"; git status'
 
 # sbt aliases
-alias scc 'sbt -mem 2048 clean compile'
-alias st  'sbt -mem 2048 test'
+alias scc='echo "sbt -mem 2048 clean compile"; sbt -mem 2048 clean compile'
+alias st='echo "sbt -mem 2048 test"; sbt -mem 2048 test'
+alias sr='echo "sbt -mem 2048 run"; sbt -mem 2048 run'
+
+for file in ~/.config/fish/conf.d/*.fish
+    source $file
+end
+
 set fisher_home ~/.local/share/fisherman
 set fisher_config ~/.config/fisherman
-source $fisher_home/config.fish
+# source $fisher_home/config.fish
