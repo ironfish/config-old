@@ -9,7 +9,7 @@ set shell=/bin/sh
 " PLUG#BEGIN (plugin manager begin) {{
 call plug#begin('~/.config/nvim/plugged')
 
-" airblade/vim-gitgutter {{
+" git/github plugins {{
 Plug 'airblade/vim-gitgutter'
 function! InitGitGutter()
   let g:gitgutter_sign_column_always=0
@@ -23,15 +23,9 @@ function! InitGitGutter()
   let g:gitgutter_highlight_lines=0
   call gitgutter#highlight#define_highlights()  " gitgutter will use Sign Column to set its color, reload it
 endfunction
-"}}
-
-" tpope/vim-fugitive {{
 Plug 'tpope/vim-fugitive'
-function! InitFugative()
-  nnoremap <leader>gd :Gdiff<CR>
-  nmap     <leader>gs :Gstatus<CR>gg<c-n>
-endfunction
-" }}
+Plug 'junegunn/gv.vim'
+"}}
 
 " junegunn/vim-easy-align {{
 Plug 'junegunn/vim-easy-align'
@@ -40,10 +34,6 @@ function! InitEasyAlign()
   nmap ga      <Plug>(EasyAlign)
 endfunction
 " }}
-
-" godlygeek/tabular {{
-Plug 'godlygeek/tabular'
-"}}
 
 " terryma/vim-multiple-cursors {{
 Plug 'terryma/vim-multiple-cursors'
@@ -72,27 +62,28 @@ function! InitMultipleCursors()
   function! Multiple_cursors_after()
     let b:deoplete_disable_auto_complete = 0
   endfunction
-
 endfunction
+" }}
 
 " tpope/vim-commentary {{
-Plug 'tpope/vim-commentary'                      " comment stuff
+Plug 'tpope/vim-commentary'
 function! InitCommentary()
   nmap <leader>/ :Commentary <CR>
   vmap <leader>/ :Commentary <CR>
 endfunction
 " }}
 
-Plug 'tpope/vim-eunuch'                          " unix commands
-Plug 'tpope/vim-surround'                        " surround with brackets, quotes, etc.
-Plug 'Raimondi/delimitMate'                      " autocompletion for parens, brackets, etc.
+" editor helper plugins {{
+" unix commands
+Plug 'tpope/vim-eunuch'
+" surround with brackets, quotes, etc.
+Plug 'tpope/vim-surround'
+" autocompletion for parens, brackets, etc.
+Plug 'Raimondi/delimitMate'
 " }}
 
-" junegunn/fzf {{
+" junegunn/fzf plugins {{
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
-"}}
-
-" junegunn/fzf.vim {{
 Plug 'junegunn/fzf.vim'
 function! InitFzfVim()
   " display finder info inline with query
@@ -133,105 +124,82 @@ function! InitFzfVim()
   nnoremap <silent> <leader>b :Buffers<CR>
   nnoremap <silent> <leader>t :BTags<CR>
 
-  function! s:function(name)
-    return function(a:name)
-  endfunction
+  let g:cmddict = {
+    \ 'Buffer Delete       Delete the current buffer.': ":bw\<CR>",
+    \ 'Buffer First        Go to the first buffer in the buffer list.': ":bfirst\<CR>",
+    \ 'Buffer Last         Go to the last buffer in the buffer list.': ":blast\<CR>",
+    \ 'Buffer Next         Go to the next buffer in the buffer list.': ":bnext\<CR>",
+    \ 'Buffer Previous     Go to the previous buffer in the buffer list.': ":bprevious\<CR>",
+    \ 'Dash Cursor         Search for the word under the cursor for the current filetype.': ":Dash\<CR>",
+    \ 'Dash Search         Search Dash for a keyword from the command line for the current filetype.': ":Dash ",
+    \ 'Dirvish             Open Dirvish file browser.': ":Dirvish %:p:h\<CR>",
+    \ 'File Mkdir          Create a directory, defaulting to the parent of the current file.': ":Mkdir ",
+    \ 'File New            Create a new file, defaulting to the parent directory of the current file.': ":edit ",
+    \ 'File Rename         Rename the current file.': ":Rename ",
+    \ 'Git Diff            Display Git difference on current file.': ":Gdiff\<CR>",
+    \ 'Git Log             Display Git log.': ":GV\<CR>",
+    \ 'Git Status          Display current Git status.': ":Gstatus\<CR>",
+    \ 'Github Browse       Browse current file on Github.': ":Gbrowse\<CR>",
+    \ 'List Buffers        Fuzzy find the current list of buffers.': ":Buffers\<CR>",
+    \ 'List Files          Fuzzy find files from the current directory and below.': ":Files\<CR>",
+    \ 'Markdown Toc        Display table of contents for markdown file.': ":Toc\<CR>",
+    \ 'Marked Open         Open the current markdown buffer in Marked.': ":MarkedOpen!\<CR>",
+    \ 'Marked Quit         Close the current markdown buffer in Marked.': ":MarkedQuit\<CR>",
+    \ 'Quit                Close the current buffer, window, tab.': ":q\<CR>",
+    \ 'Quit All            Close all buffers, windows, tabs and quit vim.': ":qall\<CR>",
+    \ 'Search Files        Search in files this directory and below.': ":Ag ",
+    \ 'Sbt Compile         Run sbt compile on the current project.': ":call ExecSbt('compile')",
+    \ 'Sbt Clean           Run sbt clean on the current project.': ":call ExecSbt('clean')\<CR>",
+    \ 'Sbt Test            Run sbt test on the current project.': ":call ExecSbt('test')\<CR>",
+    \ 'Save                Save current buffer.': ":w!\<CR>",
+    \ 'Split Delete        Delete the active split.': ":q\<CR>",
+    \ 'Split Horizontal    Split the current window horizontally.': ":sp\<CR>",
+    \ 'Split Vertical      Split the current vertically.': ":vsp\<CR>",
+    \ 'Term Horizontal     Open terminal session horizontally.': ":sp term://fish \|startinsert\<CR>",
+    \ 'Term Vertical       Open terminal session vertically.': ":vsp term://fish \|startinsert\<CR>",
+    \ 'Toggle Invisibles   Toggle invisible characters.': ":set list!\<CR>",
+    \ 'Toggle Numbers      Toggle between relative and regular line numbers.': ":call ToggleNumber()\<CR>",
+    \ 'Toggle Spelling     Toggle spelling.': ":setlocal spell!\<CR>",
+    \ 'Toggle Tagbar       Toggle the Tagbar plugin.': ":TagbarToggle\<CR>"}
 
-  function! s:cmdlist()
-    let commands = [
-          \ "Name                Description",
-          \ "Buffer_Delete       Delete the current buffer.",
-          \ "Buffer_First        Go to the first buffer in the buffer list.",
-          \ "Buffer_Last         Go to the last buffer in the buffer list.",
-          \ "Buffer_Next         Go to the next buffer in the buffer list.",
-          \ "Buffer_Previous     Go to the previous in the buffer list.",
-          \ "Dirvish             Open Dirvish file browser.",
-          \ "File_Mkdir          Create a directory, defaulting to the parent of the current file.",
-          \ "File_New            Create a new file, defaulting to the parent directory of the current file.",
-          \ "File_Rename         Rename the current file.",
-          \ "Git_Diff            Display Git difference on current file.",
-          \ "Git_Log             Display Git log.",
-          \ "Git_Status          Display current Git status.",
-          \ "Github_Browse       Browse current file on Github.",
-          \ "List_Buffers        Fuzzy find the current list of buffers.",
-          \ "List_Files          Fuzzy find files from the current directory and below.",
-          \ "Markdown_Toc        Display table of contents for markdown file.",
-          \ "Quit                Close the current buffer, window, tab.",
-          \ "Quit_all            Close all buffers, windows, tabs and quit vim.",
-          \ "Search_Files        Search in files this directory and below.",
-          \ "Save                Save current buffer.",
-          \ "Split_Delete        Delete the active split.",
-          \ "Split_Horizontal    Split the current window horizontally.",
-          \ "Split_Vertical      Split the current vertically.",
-          \ "Term_Horizontal     Open terminal session horizontally.",
-          \ "Term_Vertical       Open terminal session vertically.",
-          \ "Toggle_Invisibles   Toggle invisible characters.",
-          \ "Toggle_Numbers      Toggle between relative and regular line numbers.",
-          \ "Toggle_Spelling     Toggle spelling.",
-          \ "Toggle_Tagbar       Toggle the Tagbar plugin."]
-    return commands
+  function! s:cmddictkeys()
+    return ["Name                Description"] + sort(keys(g:cmddict))
   endfunction
 
   function! s:excmd(cmd)
-    let cmd = matchstr(a:cmd, '^\w*')
-    if cmd ==? "Toggle_Tagbar"     | call feedkeys(":TagbarToggle\<CR>")                  | endif
-    if cmd ==? "Toggle_Numbers"    | call ToggleNumber()                                  | endif
-    if cmd ==? "Toggle_Spelling"   | call feedkeys(":setlocal spell!\<CR>")               | endif
-    if cmd ==? "Toggle_Invisibles" | call feedkeys(":set list!\<CR>")                     | endif
-    if cmd ==? "Term_Horizontal"   | call feedkeys(":sp term://fish \|startinsert\<CR>")  | endif
-    if cmd ==? "Term_Vertical"     | call feedkeys(":vsp term://fish \|startinsert\<CR>") | endif
-    if cmd ==? "Split_Delete"      | q                                   | endif
-    if cmd ==? "Split_Horizontal"  | sp                                  | endif
-    if cmd ==? "Split_Vertical"    | vsp                                 | endif
-    if cmd ==? "Search_Files"      | call feedkeys(':Ag ')               | endif
-    if cmd ==? "Save"              | w!                                  | endif
-    if cmd ==? "Quit"              | q                                   | endif
-    if cmd ==? "Quit_all"          | qall                                | endif
-    if cmd ==? "Markdown_Toc"      | call feedkeys(":Toc\<CR>")          | endif
-    if cmd ==? "List_Files"        | call feedkeys(":Files\<CR>")        | endif
-    if cmd ==? "List_Buffers"      | call feedkeys(":Buffers\<CR>")      | endif
-    if cmd ==? "Github_Browse"     | Gbrowse                             | endif
-    if cmd ==? "Git_Status"        | Gstatus                             | endif
-    if cmd ==? "Git_Log"           | call feedkeys(":GV\<CR>")           | endif
-    if cmd ==? "Git_Diff"          | Gdiff                               | endif
-    if cmd ==? "File_Rename"       | call feedkeys(':Rename ')           | endif
-    if cmd ==? "File_Mkdir"        | call feedkeys(':Mkdir ')            | endif
-    if cmd ==? "File_New"          | call feedkeys(':edit ')             | endif
-    if cmd ==? "Dirvish"           | Dirvish %:p:h                       | endif
-    if cmd ==? "Buffer_Previous"   | bprevious                           | endif
-    if cmd ==? "Buffer_Next"       | bnext                               | endif
-    if cmd ==? "Buffer_Last"       | blast                               | endif
-    if cmd ==? "Buffer_First"      | bfirst                              | endif
-    if cmd ==? "Buffer_Delete"     | bw                                  | endif
+    " echom "'".g:cmddict["'".a:cmd."'"][1]."'"
+    call feedkeys(g:cmddict[a:cmd])
   endfunction
-
-  " nnoremap <silent> <Leader><leader> :call fzf#run({
-  " \   'source':  <sid>cmdlist(),
-  " \   'sink':    function('<sid>excmd'),
-  " \   'options': '--header-lines 1 --prompt "Commands> "',
-  " \   'down':    len(<sid>cmdlist()) + 1
-  " \ })<cr>
 
   function! s:commands()
     call fzf#run({
-    \ 'source':  s:cmdlist(),
+    \ 'source':  s:cmddictkeys(),
     \ 'options': '--header-lines 1 -x --prompt "Commands> "',
-    \ 'down':    len(s:cmdlist()) + 1,
+    \ 'down':    len(s:cmddictkeys()) + 1,
     \ 'sink':    function('s:excmd')})
   endfunction
+
   command! Cmds call s:commands()
-  nnoremap <silent> <leader><leader> :Cmds<CR> 
+  nnoremap <silent> <leader><leader> :Cmds<CR>
+
+  function! ExecSbt(command) abort
+      let sbt_command = 'sbt -mem 2048 '.a:command
+      let sbtc = { 'buf': bufnr('%'), 'name': 'SBT', 'command': sbt_command }
+      botright new
+      call termopen(sbt_command, sbtc)
+      setlocal nospell bufhidden=wipe nobuflisted
+      setf sbtc
+      call feedkeys(":startinsert\<CR>")
+  endfunction
+
 endfunction
 " }}
 
-Plug 'junegunn/gv.vim'
-
-" junegunn/vim-pseudocl {{
+" search plugins {{
 Plug 'junegunn/vim-pseudocl'
-" }}
-
-" junegunn/vim-oblique (requires vim-pseudocl to load first) {{
+"improved /-search for Vim (requires pseudocl to load first).
 Plug 'junegunn/vim-oblique'
+Plug 'rking/ag.vim'
 " }}
 
 " justinmk/vim-dirvish (file explorer) {{
@@ -241,37 +209,24 @@ function! InitDirvish()
   command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
   nnoremap gx :call netrw#BrowseX(expand((exists("g:netrw_gx")? g:netrw_gx : '<cfile>')),netrw#CheckIfRemote())<cr>
   nnoremap <silent> - :Dirvish %:p:h<cr>
-
-  " augroup dirvish_autocmd
-  "   autocmd!
-  "   autocmd FileType dirvish call fugitive#detect(@%)
-  " augroup END
+  augroup dirvish_autocmd
+    autocmd!
+    autocmd FileType dirvish call fugitive#detect(@%)
+  augroup END
 endfunction
 " }}
 
-" rizzatti/dash.vim {{
-Plug 'rizzatti/dash.vim',  { 'on': 'Dash' }
-function! InitDash()
-  nmap <silent> <leader>a <Plug>DashSearch
-endfunction
-" }}
-
-" rking/ag.vim {{
-Plug 'rking/ag.vim'
-" }}
-
-" itspriddle/vim-marked (opens marked2 app) {{
+" markdown plugins {{
 Plug 'itspriddle/vim-marked'
-" }}
-
-" plasticboy/vim-markdown (requires tablular to load first) {{
+Plug 'godlygeek/tabular'
+" plasticboy/vim-markdown (requires tablular to load first)
 Plug 'plasticboy/vim-markdown'
 function! InitVimMarkdown()
   let g:vim_markdown_fenced_languages=['java=java', 'scala=scala']
 endfunction
 " }}
 
-" artur-shaik/vim-javacomplete2 {{
+" java/scala and other code plugins {{
 Plug 'artur-shaik/vim-javacomplete2'
 function! InitVimJavaComplete()
   let g:JavaComplete_UseFQN = 1
@@ -279,41 +234,12 @@ function! InitVimJavaComplete()
   let g:JavaComplete_ServerAutoShutdownTime = 300
   let g:JavaComplete_MavenRepositoryDisable = 1
 endfunction
-" }}
-
-" benekastah/neomake {{
-Plug 'benekastah/neomake'
-function! InitNeomake()
-  let g:neomake_open_list = 1
-  let g:neomake_verbose = 2
-  let g:neomake_scala_enabled_makers = ['scalastyle']
-  let g:neomake_python_enabled_makers = ['pep8', 'flake8']
-  let g:neomake_python_pep8_maker = {
-    \ 'args': ['--max-line-length 99'],
-    \ 'errorformat': '%A%f: line %l\, col %v\, %m \(%t%*\d\)',
-    \ }
-  let g:neomake_sbt_maker = {
-    \ 'exe': 'sbt',
-    \ 'args': ['-Dsbt.log.noformat=true', 'compile'],
-    \ 'errorformat':
-    \ '%E\ %#[error]\ %f:%l:\ %m,%C\ %#[error]\ %p^,%-C%.%#,%Z,%W\ %#[warn]\ %f:%l:\ %m,%C\ %#[warn]\ %p^,%-C%.%#,%Z,%-G%.%#',
-    \ 'buffer_output': 1
-    \ }
-
-  "autocmd! BufWritePost,BufReadPost * Neomake
-endfunction
-" }}
-
-" derekwyatt/vim-scala {{
+" better java syntax.
+Plug 'vim-jp/vim-java'
 Plug 'derekwyatt/vim-scala'
-" }}
-
-" ironfish/scala-api-complete {{
 Plug 'ironfish/scala-api-complete'
-" }}
-
-" ludovicchabant/vim-gutentags {{
 Plug 'ludovicchabant/vim-gutentags'
+Plug 'rizzatti/dash.vim',  { 'on': 'Dash' }
 " }}
 
 " Shougo/deoplete.nvim {{
@@ -334,11 +260,8 @@ function InitDeoplete()
   let g:deoplete#ignore_sources = {}
   let g:deoplete#ignore_sources._ = ['javacomplete2']
   call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
-
-"  let g:deoplete#enable_at_startup = 1
-"  let g:deoplete#enable_camel_case = 1
-"  let g:deoplete#auto_complete_delay = 100
-  set pumheight=15                                           " limit completion menu height
+  " limit completion menu height
+  set pumheight=15
 
   " <TAB>: completion.
   imap <silent><expr> <TAB>
@@ -364,34 +287,33 @@ function InitDeoplete()
 endfunction
 " }}
 
-" vim-jp/vim-java (better java syntax) {{
-Plug 'vim-jp/vim-java'
-" }}
-
-" colorschemes {{
+" colorschemes and eye-candy plugins {{
 Plug 'chriskempson/base16-vim'
 Plug 'mhartington/oceanic-next'
 Plug 'nanotech/jellybeans.vim'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'w0ng/vim-hybrid'
 Plug 'kristijanhusak/vim-hybrid-material'
+Plug 'gcavallanti/vim-noscrollbar'
 " }}
 
 " ap/vim-buftabline {{
 Plug 'ap/vim-buftabline'
 function! InitBuftabline()
-  let g:buftabline_indicators=1  " buffer's state is indicated in the buffer label
-  let g:buftabline_show=2        " always show buffer tabline
-  let g:buftabline_numbers=1     " the buffer number is shown in the buffer label
-  let g:buftabline_separators=1  " draw thin vertical line between buffer tabs
-  " hi! BufTabLineCurrent guifg=#1c1c1c guibg=#b5bd68
-  " hi! BufTabLineFill guibg=#37474f
-  " hi! BufTabLineHidden guifg=#37474f guibg=#37474f
+  " buffer's state is indicated in the buffer label
+  let g:buftabline_indicators=1
+  " always show buffer tabline
+  let g:buftabline_show=2
+  " the buffer number is shown in the buffer label
+  let g:buftabline_numbers=1
+  " draw thin vertical line between buffer tabs
+  let g:buftabline_separators=1
+  " colors to match lightline Hybrid colorscheme
+  hi! BufTabLineCurrent guifg=#8c9440 guibg=#b5bd67
+  hi! BufTabLineFill guibg=#2d3c46
+  hi! BufTabLineHidden guifg=#6c7a80 guibg=#425059
+  hi! BufTabLineActive guifg=#c5c8c6 guibg=#6c7a80
 endfunction
-" }}
-
-" gcavallanti/vim-noscrollbar (eye candy) {{
-Plug 'gcavallanti/vim-noscrollbar'
 " }}
 
 " itchyny/lightline.vim {{
@@ -442,6 +364,7 @@ function! InitLightline()
     let fname = expand('%:t')
     return fname == '__Tagbar__' ? 'Tagbar' :
       \ &ft == 'fzf' ? 'FZF' :
+      \ &ft == 'sbtc' ? 'SBT' :
       \ &ft == 'dirvish' ? 'DIRVISH' :
       \ &ft == 'help' ? 'HELP' :
       \ winwidth(0) > 60 ? lightline#mode() : ''
@@ -489,6 +412,7 @@ function! InitLightline()
     let path = expand('%:F')
     return fname == '__Tagbar__' ? g:lightline.fname :
       \ &ft == 'fzf' ? '' :
+      \ &ft == 'sbtc' ? matchstr(path, '-mem.*') :
       \ &ft == 'dirvish' ? path :
       \ ('' != fname ? pathshorten(path) : '[No Name]') .
       \ ('' != MyModified() ? ' ' . MyModified() : '')
@@ -611,7 +535,6 @@ Plug 'majutsushi/tagbar', { 'on': 'TagbarToggle' }
 function! InitTagbar()
   let g:tagbar_compact=1
   let g:tagbar_indent=1
-  nnoremap <leader>tt :TagbarToggle<CR>
 endfunction
 " }}
 
@@ -724,7 +647,7 @@ endfunction
 " }}
 
 " appearance {{
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1           " enable true color
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1            " enable true color
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1          " change curser shape in insert mode
 syntax enable
 set background=dark
@@ -732,7 +655,7 @@ let g:hybrid_custom_term_colors = 1
 let g:hybrid_reduced_contrast = 1            " Remove this line if using the default palette.
 colorscheme hybrid
 set colorcolumn=+1                           " increase the left margin by 1
-set nocursorline                             " killls performance, turn it off 
+set nocursorline                             " kills performance, turn it off
 set nocursorcolumn                           " show vertical line
 set laststatus=2                             " show the status line
 set lazyredraw                               " don't update the display while executing macros
@@ -742,7 +665,6 @@ set listchars+=nbsp:␣
 set listchars+=extends:›
 set listchars+=precedes:‹
 set listchars+=eol:¶"
-"set matchpairs=(:),[:],{:},<:>               " highlight matching tags
 set noshowmode                               " hide show mode in status line, using lightline plugin, not needed
 set nostartofline                            " keep the cursor on the same column
 set number                                   " show line numbers
@@ -764,7 +686,6 @@ set visualbell                               " no visual bells either
 set splitbelow                               " default horizontal split is below
 set splitright                               " default vertical split is to the right
 set virtualedit+=block                       " ctrl-v to select text in block mode, let me move cursor anywhere in buffer
-" set virtualedit=all                          " allow the cursot to go in to invalid places
 set whichwrap=h,l,[<]>],[<\>]                " make cursor keys wrap (] and \ are for right and left arrows
 set tags=./tags;/                            " tags location
 " }}
@@ -779,16 +700,18 @@ set nofoldenable                             " do not fold on start
 " }}
 
 " formatting {{
-set formatoptions+=r                         " continue comments by default
-set formatoptions+=o                         " make comment when using o or O from comment line
-set formatoptions+=q                         " format comments with gq
-set formatoptions+=n                         " recognize numbered lists
-set formatoptions+=c                         " format comments
-set formatoptions+=t                         " wrap when using textwidth
+" set formatoptions+=r                         " continue comments by default
+" set formatoptions+=o                         " make comment when using o or O from comment line
+" set formatoptions+=q                         " format comments with gq
+" set formatoptions+=n                         " recognize numbered lists
+" set formatoptions+=c                         " format comments
+" set formatoptions+=t                         " wrap when using textwidth
+set formatoptions+=1
+set formatoptions+=j
 set linebreak                                " wrap long lines at a character
 set nojoinspaces                             " don't join lines with two spaces at the end of sentences
 set nolist                                   " do not show whitespace characters on start
-set showbreak=↪                              " line break character for wrapped lines
+set &showbreak='↪ '                          " line break character for wrapped lines
 set synmaxcol=200                            " scrolling can be very slow for long wraps (i.e. columns)
 set textwidth=132                            " no hard breaks unless i press enter
 set wrap                                     " wrap text at window width
@@ -849,20 +772,19 @@ if !isdirectory(expand(&undodir))
   call mkdir(expand(&undodir), "p")
 endif
 
-" view directory
+view directory
 set viewdir=~/dotfiles/tmp/nvim-view//
 if !isdirectory(expand(&viewdir))
   call mkdir(expand(&viewdir), "p")
 endif
 
-if !has('nvim')
-  set viminfo='1000,n~/dotfiles/tmp/viminfo
-else
-  set viminfo='1000,n~/dotfiles/tmp/nviminfo
-endif
+" if !has('nvim')
+"   set viminfo='1000,n~/dotfiles/tmp/viminfo
+" else
+"   set viminfo='1000,n~/dotfiles/tmp/nviminfo
+" endif
 " }}
 
-call InitDash()
 call InitRainbowParentheses()
 call InitTagbar()
 call InitDirvish()
@@ -870,13 +792,11 @@ call InitEasyAlign()
 call InitMultipleCursors()
 call InitCommentary()
 call InitFzfVim()
-call InitFugative()
 call InitGitGutter()
 call InitBuftabline()
 call InitDeoplete()
 call InitIndentline()
 call InitLightline()
-call InitNeomake()
 call InitVimMarkdown()
 call InitVimJavaComplete()
 
@@ -1078,5 +998,4 @@ if exists(':terminal')
   let g:terminal_color_15="#c5c8c6"
 endif
 " }}
-
 
