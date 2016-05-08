@@ -148,7 +148,8 @@ function! InitFzfVim()
     \ 'Quit                Close the current buffer, window, tab.': ":q\<CR>",
     \ 'Quit All            Close all buffers, windows, tabs and quit vim.': ":qall\<CR>",
     \ 'Search Files        Search in files this directory and below.': ":Ag ",
-    \ 'Sbt Compile         Run sbt compile on the current project.': ":call ExecSbt('compile')",
+    \ 'Sbt Console         Run sbt console on the current project.': ":call ExecSbt('console')\<CR>",
+    \ 'Sbt Compile         Run sbt compile on the current project.': ":call ExecSbt('compile')\<CR>",
     \ 'Sbt Clean           Run sbt clean on the current project.': ":call ExecSbt('clean')\<CR>",
     \ 'Sbt Test            Run sbt test on the current project.': ":call ExecSbt('test')\<CR>",
     \ 'Save                Save current buffer.': ":w!\<CR>",
@@ -171,11 +172,12 @@ function! InitFzfVim()
     call feedkeys(g:cmddict[a:cmd])
   endfunction
 
+    " \ 'down':    len(s:cmddictkeys()) + 1,
   function! s:commands()
     call fzf#run({
     \ 'source':  s:cmddictkeys(),
     \ 'options': '--header-lines 1 -x --prompt "Commands> "',
-    \ 'down':    len(s:cmddictkeys()) + 1,
+    \ 'window':  'botright 20new',
     \ 'sink':    function('s:excmd')})
   endfunction
 
@@ -187,11 +189,20 @@ function! InitFzfVim()
       let sbtc = { 'buf': bufnr('%'), 'name': 'SBT', 'command': sbt_command }
       botright new
       call termopen(sbt_command, sbtc)
-      setlocal nospell bufhidden=wipe nobuflisted
+      setlocal nospell bufhidden=wipe nobuflisted foldcolumn=0
+      " let w:gitgutter_enabled = 0
+      let g:gitgutter_signs = 0
       setf sbtc
-      call feedkeys(":startinsert\<CR>")
+      "execute 'wincmd p'
+      startinsert
+      " call feedkeys("i")
+      return []
   endfunction
 
+  augroup sbtcgroup
+    autocmd!
+    autocmd TermClose * let g:gitgutter_signs=1
+  augroup END
 endfunction
 " }}
 
@@ -298,22 +309,22 @@ Plug 'gcavallanti/vim-noscrollbar'
 " }}
 
 " ap/vim-buftabline {{
-Plug 'ap/vim-buftabline'
-function! InitBuftabline()
-  " buffer's state is indicated in the buffer label
-  let g:buftabline_indicators=1
-  " always show buffer tabline
-  let g:buftabline_show=2
-  " the buffer number is shown in the buffer label
-  let g:buftabline_numbers=1
-  " draw thin vertical line between buffer tabs
-  let g:buftabline_separators=1
-  " colors to match lightline Hybrid colorscheme
-  hi! BufTabLineCurrent guifg=#8c9440 guibg=#b5bd67
-  hi! BufTabLineFill guibg=#2d3c46
-  hi! BufTabLineHidden guifg=#6c7a80 guibg=#425059
-  hi! BufTabLineActive guifg=#c5c8c6 guibg=#6c7a80
-endfunction
+" Plug 'ap/vim-buftabline'
+" function! InitBuftabline()
+"   " buffer's state is indicated in the buffer label
+"   let g:buftabline_indicators=1
+"   " always show buffer tabline
+"   let g:buftabline_show=2
+"   " the buffer number is shown in the buffer label
+"   let g:buftabline_numbers=1
+"   " draw thin vertical line between buffer tabs
+"   let g:buftabline_separators=1
+"   " colors to match lightline Hybrid colorscheme
+"   hi! BufTabLineCurrent guifg=#8c9440 guibg=#b5bd67
+"   hi! BufTabLineFill guibg=#2d3c46
+"   hi! BufTabLineHidden guifg=#6c7a80 guibg=#425059
+"   hi! BufTabLineActive guifg=#c5c8c6 guibg=#6c7a80
+" endfunction
 " }}
 
 " itchyny/lightline.vim {{
@@ -322,17 +333,19 @@ function! InitLightline()
   let g:lightline = {
     \ 'colorscheme': 'Hybrid',
     \ 'active': {
-    \   'left': [
-    \     ['mode', 'paste'],
-    \     ['gitgutter', 'fugitive'],
-    \     ['readonly', 'filename']
-    \   ],
-    \   'right': [
-    \     ['trailing', 'indentation'],
-    \     ['percent', 'lineinfo'],
-    \     ['fileformat', 'fileencoding', 'filetype'],
-    \     ['noscrollbar', 'tags']
-    \   ]
+    \   'left': [['mode', 'paste'],['gitgutter', 'fugitive'],['readonly', 'filename']],
+    \   'right': [['trailing', 'indentation'],['percent', 'lineinfo'],['fileformat', 'fileencoding', 'filetype'],['noscrollbar', 'tags']]
+    \ },
+    \ 'inactive': {
+    \   'left': [['mode'],['filename']]
+    \ },
+    \ 'tabline': {
+    \   'left': [['tabs']],
+    \   'right': [['close']]
+    \ },
+    \ 'tab': {
+    \   'active': ['tabnum','readonly','filename','modified'],
+    \   'inactive': ['tabnum','readonly','filename','modified']
     \ },
     \ 'component_function': {
     \   'mode': 'MyMode',
@@ -348,6 +361,9 @@ function! InitLightline()
     \   'filetype': 'MyFiletype',
     \   'lineinfo': 'MyLineinfo',
     \ },
+    \ 'tab_component_function': {
+    \   'readonly': 'MyTabReadonly',
+    \ },
     \ 'component_expand': {
     \   'trailing': 'TrailingSpaceWarning',
     \   'indentation': 'MixedIndentSpaceWarning',
@@ -357,10 +373,11 @@ function! InitLightline()
     \   'indentation': 'warning',
     \ },
     \ 'separator': { 'left': '', 'right': '' },
-    \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
+    \ 'subseparator': { 'left': "\u2502", 'right': "\u2502" }
     \ }
 
-  function! MyMode()
+    " \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
+  function! MyMode() abort
     let fname = expand('%:t')
     return fname == '__Tagbar__' ? 'Tagbar' :
       \ &ft == 'fzf' ? 'FZF' :
@@ -370,10 +387,11 @@ function! InitLightline()
       \ winwidth(0) > 60 ? lightline#mode() : ''
   endfunction
 
-  function! MyGitGutter()
+  function! MyGitGutter() abort
     if ! exists('*GitGutterGetHunkSummary')
       \ || ! get(g:, 'gitgutter_enabled', 0)
       \ || winwidth('.') <= 90
+      \ || &ft =~ 'dirvish\|fzf\|help\|sbtc\|term'
       return ''
     endif
     let symbols = [
@@ -391,9 +409,9 @@ function! InitLightline()
     return join(ret, ' ')
   endfunction
 
-  function! MyFugitive()
+  function! MyFugitive() abort
     try
-      if expand('%:t') !~? 'Tagbar' && &ft !~? 'dirvish\|help' && exists('*fugitive#head')
+      if expand('%:t') !~? 'Tagbar' && &ft !~? 'dirvish\|help\|sbtc' && exists('*fugitive#head')
         let mark = "\ue220"  " edit here for cool mark
         let _ = fugitive#head()
         return strlen(_) ? mark.' '._ : ''
@@ -403,11 +421,16 @@ function! InitLightline()
     return ''
   endfunction
 
-  function! MyReadonly()
-    return s:ftMatches('help') && &readonly ? "\ue138" : ''
+  function! MyReadonly() abort
+    return s:ftMatches('help') && &readonly ? "\ue86a".' ' : ''
   endfunction
 
-  function! MyFilename()
+  function! MyTabReadonly(n) abort
+    let winnr = tabpagewinnr(a:n)
+    return gettabwinvar(a:n, winnr, '&readonly') ? "\ue86a" : ''
+  endfunction
+
+  function! MyFilename() abort
     let fname = expand('%:t')
     let path = expand('%:F')
     return fname == '__Tagbar__' ? g:lightline.fname :
@@ -418,76 +441,76 @@ function! InitLightline()
       \ ('' != MyModified() ? ' ' . MyModified() : '')
   endfunction
 
-  function! MyGutenTags()
+  function! MyGutenTags() abort
     let fname = expand('%:t')
     if fname == '__Tagbar__' | return '' | endif
-    if &ft =~ 'dirvish\|fzf\|help\|term' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|help\|sbtc\|term' | return '' | endif
     if &buftype == 'terminal' | return '' | endif
     let mark = "\ue817"
     let _ = gutentags#statusline('+')
     return strlen(_) ? _ . ' ' . mark . ' ' : mark . ' '
   endfunction
 
-  function! MyNoScrollbar()
+  function! MyNoScrollbar() abort
     let fname = expand('%:t')
     if fname == '__Tagbar__' | return '' | endif
-    if &ft =~ 'dirvish\|fzf' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|sbtc' | return '' | endif
     if &buftype == 'terminal' | return '' | endif
     return noscrollbar#statusline(10,'■','◫',['◧'],['◨'])
   endfunction
 
-  function! MyFileformat()
+  function! MyFileformat() abort
     let fname = expand('%:t')
     if fname == '__Tagbar__' | return '' | endif
-    if &ft =~ 'dirvish\|fzf\|help' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|help\|sbtc' | return '' | endif
     if &buftype == 'terminal' | return '' | endif
     return winwidth(0) > 70 ? &fileformat : ''
   endfunction
 
-  function! MyFileencoding()
+  function! MyFileencoding() abort
     let fname = expand('%:t')
     if fname == '__Tagbar__' | return '' | endif
-    if &ft =~ 'dirvish\|fzf\|help' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|help\|sbtc' | return '' | endif
     if &buftype == 'terminal' | return '' | endif
     return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
   endfunction
 
-  function! MyFiletype()
+  function! MyFiletype() abort
     let fname = expand('%:t')
     if fname == '__Tagbar__' | return '' | endif
-    if &ft =~ 'dirvish\|fzf\|help' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|help\|sbtc' | return '' | endif
     if &buftype == 'terminal' | return '' | endif
     return winwidth(0) > 70 ? (strlen(&filetype) ?  &filetype . ' ' . "\ue12d" . '' : 'no ft') : ''
   endfunction
 
- function! MyPercent()
+ function! MyPercent() abort
    let fname = expand('%:t')
    if fname == '__Tagbar__' | return '' | endif
-   if &ft =~ 'dirvish\|fzf' | return '' | endif
+   if &ft =~ 'dirvish\|fzf\|sbtc' | return '' | endif
     if &buftype == 'terminal' | return '' | endif
    return printf("%1d%%", float2nr(round(str2float(line('.'))/str2float(line('$'))*100)))
  endfunction
 
-  function! MyLineinfo()
+  function! MyLineinfo() abort
     let fname = expand('%:t')
     if fname == '__Tagbar__' | return '' | endif
-    if &ft =~ 'dirvish\|fzf' | return '' | endif
+    if &ft =~ 'dirvish\|fzf\|sbtc' | return '' | endif
     if &buftype == 'terminal' | return '' | endif
     return printf("%1d:%-1d \ue862 ", line('.'), col('.'))
   endfunction
 
-  function! MyModified()
+  function! MyModified() abort
     return  s:ftMatches('help') ? '' : &modified ? '+' : &modifiable ? '' : '-'
   endfunction
 
   " credit to https://github.com/obxhdx/vimfiles/blob/master/lightline.vim
-  function! TrailingSpaceWarning()
+  function! TrailingSpaceWarning() abort
     if s:ftMatches('help') || winwidth(0) < 80 | return '' | endif
     let l:trailing = search('\s$', 'nw')
     return (l:trailing != 0) ? '… trailing[' . trailing . ']' : ''
   endfunction
 
-  function! MixedIndentSpaceWarning()
+  function! MixedIndentSpaceWarning() abort
     if s:ftMatches('help') || winwidth(0) < 80 | return '' | endif
     let l:tabs = search('^\t', 'nw')
     let l:spaces = search('^ ', 'nw')
@@ -497,7 +520,7 @@ function! InitLightline()
   let g:tagbar_status_func = 'TagbarStatusFunc'
 
   function! TagbarStatusFunc(current, sort, fname, ...) abort
-      let g:lightline.fname = a:fname
+    let g:lightline.fname = a:fname
     return lightline#statusline(0)
   endfunction
 
@@ -711,7 +734,7 @@ set formatoptions+=j
 set linebreak                                " wrap long lines at a character
 set nojoinspaces                             " don't join lines with two spaces at the end of sentences
 set nolist                                   " do not show whitespace characters on start
-set &showbreak='↪ '                          " line break character for wrapped lines
+let &showbreak='↪ '                          " line break character for wrapped lines
 set synmaxcol=200                            " scrolling can be very slow for long wraps (i.e. columns)
 set textwidth=132                            " no hard breaks unless i press enter
 set wrap                                     " wrap text at window width
@@ -772,7 +795,7 @@ if !isdirectory(expand(&undodir))
   call mkdir(expand(&undodir), "p")
 endif
 
-view directory
+" view directory
 set viewdir=~/dotfiles/tmp/nvim-view//
 if !isdirectory(expand(&viewdir))
   call mkdir(expand(&viewdir), "p")
@@ -793,7 +816,7 @@ call InitMultipleCursors()
 call InitCommentary()
 call InitFzfVim()
 call InitGitGutter()
-call InitBuftabline()
+"call InitBuftabline()
 call InitDeoplete()
 call InitIndentline()
 call InitLightline()
