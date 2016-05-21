@@ -275,26 +275,6 @@ Plug 'nanotech/jellybeans.vim'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'w0ng/vim-hybrid'
 Plug 'kristijanhusak/vim-hybrid-material'
-Plug 'gcavallanti/vim-noscrollbar'
-" }}
-
-" ap/vim-buftabline {{
-" Plug 'ap/vim-buftabline'
-" function! InitBuftabline()
-"   " buffer's state is indicated in the buffer label
-"   let g:buftabline_indicators=1
-"   " always show buffer tabline
-"   let g:buftabline_show=2
-"   " the buffer number is shown in the buffer label
-"   let g:buftabline_numbers=1
-"   " draw thin vertical line between buffer tabs
-"   let g:buftabline_separators=1
-"   " colors to match lightline Hybrid colorscheme
-"   hi! BufTabLineCurrent guifg=#8c9440 guibg=#b5bd67
-"   hi! BufTabLineFill guibg=#2d3c46
-"   hi! BufTabLineHidden guifg=#6c7a80 guibg=#425059
-"   hi! BufTabLineActive guifg=#c5c8c6 guibg=#6c7a80
-" endfunction
 " }}
 
 " itchyny/lightline.vim {{
@@ -303,8 +283,8 @@ function! InitLightline()
   let g:lightline = {
     \ 'colorscheme': 'Hybrid',
     \ 'active': {
-    \   'left': [['mode', 'paste'],['gitgutter', 'fugitive'],['readonly', 'filename']],
-    \   'right': [['trailing', 'indentation'],['percent', 'lineinfo'],['fileformat', 'fileencoding', 'filetype'],['noscrollbar', 'tags']]
+    \   'left': [['mode', 'paste'],['fugitive'],['readonly', 'filename']],
+    \   'right': [['trailing', 'indentation'],['percent', 'lineinfo'],['fileformat', 'fileencoding', 'filetype']]
     \ },
     \ 'inactive': {
     \   'left': [['mode'],['filename']]
@@ -319,12 +299,9 @@ function! InitLightline()
     \ },
     \ 'component_function': {
     \   'mode': 'MyMode',
-    \   'gitgutter': 'MyGitGutter',
     \   'fugitive': 'MyFugitive',
     \   'readonly': 'MyReadonly',
     \   'filename': 'MyFilename',
-    \   'tags': 'MyGutenTags',
-    \   'noscrollbar': 'MyNoScrollbar',
     \   'fileformat': 'MyFileformat',
     \   'fileencoding': 'MyFileencoding',
     \   'percent': 'MyPercent',
@@ -346,7 +323,6 @@ function! InitLightline()
     \ 'subseparator': { 'left': "\u2502", 'right': "\u2502" }
     \ }
 
-    " \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
   function! MyMode() abort
     let fname = expand('%:t')
     return fname == '__Tagbar__' ? 'Tagbar' :
@@ -355,28 +331,6 @@ function! InitLightline()
       \ &ft == 'dirvish' ? 'DIRVISH' :
       \ &ft == 'help' ? 'HELP' :
       \ winwidth(0) > 60 ? lightline#mode() : ''
-  endfunction
-
-  function! MyGitGutter() abort
-    if ! exists('*GitGutterGetHunkSummary')
-      \ || ! get(g:, 'gitgutter_enabled', 0)
-      \ || winwidth('.') <= 90
-      \ || &ft =~ 'dirvish\|fzf\|help\|sbtc\|term'
-      return ''
-    endif
-    let symbols = [
-      \ g:gitgutter_sign_added . ' ',
-      \ g:gitgutter_sign_modified . ' ',
-      \ g:gitgutter_sign_removed . ' '
-      \ ]
-    let hunks = GitGutterGetHunkSummary()
-    let ret = []
-    for i in [0, 1, 2]
-      if hunks[i] > 0
-        call add(ret, symbols[i] . hunks[i])
-      endif
-    endfor
-    return join(ret, ' ')
   endfunction
 
   function! MyFugitive() abort
@@ -400,6 +354,7 @@ function! InitLightline()
     return gettabwinvar(a:n, winnr, '&readonly') ? "\ue86a" : ''
   endfunction
 
+" \ ('' != fname ? pathshorten(path) : '[No Name]') .
   function! MyFilename() abort
     let fname = expand('%:t')
     let path = expand('%:F')
@@ -407,26 +362,8 @@ function! InitLightline()
       \ &ft == 'fzf' ? '' :
       \ &ft == 'sbtc' ? matchstr(path, '-mem.*') :
       \ &ft == 'dirvish' ? path :
-      \ ('' != fname ? pathshorten(path) : '[No Name]') .
+      \ ('' != fname ? path : '[No Name]') .
       \ ('' != MyModified() ? ' ' . MyModified() : '')
-  endfunction
-
-  function! MyGutenTags() abort
-    let fname = expand('%:t')
-    if fname == '__Tagbar__' | return '' | endif
-    if &ft =~ 'dirvish\|fzf\|help\|sbtc\|term' | return '' | endif
-    if &buftype == 'terminal' | return '' | endif
-    let mark = "\ue817"
-    let _ = gutentags#statusline('+')
-    return strlen(_) ? _ . ' ' . mark . ' ' : mark . ' '
-  endfunction
-
-  function! MyNoScrollbar() abort
-    let fname = expand('%:t')
-    if fname == '__Tagbar__' | return '' | endif
-    if &ft =~ 'dirvish\|fzf\|sbtc' | return '' | endif
-    if &buftype == 'terminal' | return '' | endif
-    return noscrollbar#statusline(10,'■','◫',['◧'],['◨'])
   endfunction
 
   function! MyFileformat() abort
@@ -506,8 +443,6 @@ function! InitLightline()
     call TrailingSpaceWarning()
     call MixedIndentSpaceWarning()
     call MyFugitive()
-    call MyGutenTags()
-    call MyNoScrollbar()
     call lightline#update()
   endfunction
 
@@ -785,7 +720,6 @@ call InitEasyAlign()
 call InitCommentary()
 call InitFzfVim()
 call InitGitGutter()
-"call InitBuftabline()
 call InitDeoplete()
 call InitIndentline()
 call InitLightline()
