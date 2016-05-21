@@ -35,41 +35,11 @@ function! InitEasyAlign()
 endfunction
 " }}
 
-" terryma/vim-multiple-cursors {{
-Plug 'terryma/vim-multiple-cursors'
-"NOTE VISUAL MODE:
-"  1. ctrl-n will select the word(s) and place you in VISUAL mode
-"  2. 'h','j','k' and 'l' will allow you to change the selection block
-"  3. 'c' or 's' will delete the selected word(s) and enter INSERT mode
-"NOTE NORMAL MODE:
-"  1. use 'v' to enter normal mode
-"  2. 'i' will insert at the cursor(s) current location
-"  3. 'I' will move the cursor to the beginning of the line for insertion
-"  4. 'a' will move the cursor to the end of the word for insertion
-"  5. 'A' will move the cursor to the end of the line for insertion
-" move cursor down/up within non-breaking lines
-function! InitMultipleCursors()
-  let g:multi_cursor_next_key='<C-n>'            " select word/next under cursor
-  let g:multi_cursor_prev_key='<C-m>'            " select previous word
-  let g:multi_cursor_skip_key='<C-x>'            " skip word
-  let g:multi_cursor_quit_key='<Esc>'            " quit multi select
-
-  let g:multi_cursor_use_default_mapping=0
-  function! Multiple_cursors_before()
-    let b:deoplete_disable_auto_complete = 1
-  endfunction
-
-  function! Multiple_cursors_after()
-    let b:deoplete_disable_auto_complete = 0
-  endfunction
-endfunction
-" }}
-
 " tpope/vim-commentary {{
 Plug 'tpope/vim-commentary'
 function! InitCommentary()
-  nmap <leader>/ :Commentary <CR>
-  vmap <leader>/ :Commentary <CR>
+  nmap <leader>c :Commentary <CR>
+  vmap <leader>c :Commentary <CR>
 endfunction
 " }}
 
@@ -700,7 +670,7 @@ set showcmd                                  " don't show, in OSX with lazyredra
 set autoread                                 " notify when file has changed outside of vim/nvim
 set autowriteall                             " write on exit
 set backspace=indent,eol,start               " backspace over auto-indent, eol, start to join lines
-set clipboard=unnamed                        " use system clipboard
+set clipboard+=unnamedplus                    " use system clipboard
 set hidden                                   " hide buffers when abandoned, will allow movement to another without saving
 set history=100                              " keep some stuff in history
 set mouse=a                                  " enable mouse for all modes
@@ -812,7 +782,6 @@ call InitRainbowParentheses()
 call InitTagbar()
 call InitDirvish()
 call InitEasyAlign()
-call InitMultipleCursors()
 call InitCommentary()
 call InitFzfVim()
 call InitGitGutter()
