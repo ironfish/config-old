@@ -1,1 +1,1 @@
-/Users/Ironfish/.config/fisherman/git_util/functions/git_untracked_files.fish
+/Users/Ironfish/.config/fisherman/git_util/git_untracked_files.fish

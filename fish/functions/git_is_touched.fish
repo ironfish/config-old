@@ -1,1 +1,1 @@
-/Users/Ironfish/.config/fisherman/git_util/functions/git_is_touched.fish
+/Users/Ironfish/.config/fisherman/git_util/git_is_touched.fish

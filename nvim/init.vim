@@ -58,37 +58,12 @@ Plug 'junegunn/fzf.vim'
 function! InitFzfVim()
   " display finder info inline with query
   if has('nvim')
-    " let $FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -l -g ""'
     let $FZF_DEFAULT_COMMAND='ag -l -g ""'
-    let $FZF_DEFAULT_OPTS=' --inline-info'
+    " for solarized dark
+    " let $FZF_DEFAULT_OPTS=' --inline-info --color dark,hl:33,hl+:37,fg+:235,bg+:136,fg+:254 --color info:254,prompt:37,spinner:108,pointer:235,marker:235'
+    " for solarized light
+    " let $FZF_DEFAULT_OPTS=' --line-info --color fg:240,bg:230,hl:33,fg+:241,bg+:221,hl+:33 --color info:33,prompt:33,pointer:166,marker:166,spinner:33'
   endif
-
-  " Customize fzf colors to match your color scheme
-  let g:fzf_colors =
-  \ { 'fg':      ['fg', 'Normal'],
-    \ 'bg':      ['bg', 'Normal'],
-    \ 'hl':      ['fg', 'Comment'],
-    \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-    \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-    \ 'hl+':     ['fg', 'Statement'],
-    \ 'info':    ['fg', 'PreProc'],
-    \ 'prompt':  ['fg', 'Conditional'],
-    \ 'pointer': ['fg', 'Exception'],
-    \ 'marker':  ['fg', 'Keyword'],
-    \ 'spinner': ['fg', 'Label'],
-    \ 'header':  ['fg', 'Comment'] }
-
-" these colors are for dark
-  function! s:fzf_statusline()
-    " Override statusline as you like
-    highlight fzf1 ctermfg=161 ctermbg=251
-    highlight fzf2 ctermfg=23 ctermbg=251
-    highlight fzf3 ctermfg=237 ctermbg=251
-    let g:fzf_nvim_statusline = 0
-    setlocal statusline=%#fzf1#\ >\ %#fzf2#fz%#fzf3#f
-  endfunction
-
-  autocmd! User FzfStatusLine call <SID>fzf_statusline()
 
   nnoremap <silent> <leader>f :Files<CR>
   nnoremap <silent> <leader>b :Buffers<CR>
@@ -275,16 +250,24 @@ Plug 'nanotech/jellybeans.vim'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'w0ng/vim-hybrid'
 Plug 'kristijanhusak/vim-hybrid-material'
+Plug 'lifepillar/vim-solarized8'
+Plug 'jacoborus/tender.vim'
+Plug 'morhetz/gruvbox'
 " }}
 
 " itchyny/lightline.vim {{
 Plug 'itchyny/lightline.vim'
+"\ 'colorscheme': 'Hybrid',
+"\ 'colorscheme': 'solarized',
+"let g:tender_lightline = 1
+"\ 'colorscheme': 'tender',
 function! InitLightline()
+  let g:tender_lightline = 1
   let g:lightline = {
-    \ 'colorscheme': 'Hybrid',
+    \ 'colorscheme': 'gruvbox',
     \ 'active': {
     \   'left': [['mode', 'paste'],['fugitive'],['readonly', 'filename']],
-    \   'right': [['trailing', 'indentation'],['percent', 'lineinfo'],['fileformat', 'fileencoding', 'filetype']]
+    \   'right': [['fileformat', 'fileencoding', 'filetype'], ['trailing', 'indentation'],['percent', 'lineinfo']]
     \ },
     \ 'inactive': {
     \   'left': [['mode'],['filename']]
@@ -387,7 +370,7 @@ function! InitLightline()
     if fname == '__Tagbar__' | return '' | endif
     if &ft =~ 'dirvish\|fzf\|help\|sbtc' | return '' | endif
     if &buftype == 'terminal' | return '' | endif
-    return winwidth(0) > 70 ? (strlen(&filetype) ?  &filetype . ' ' . "\ue12d" . '' : 'no ft') : ''
+    return winwidth(0) > 70 ? (strlen(&filetype) ?  &filetype . ' ' : 'no ft') : ''
   endfunction
 
  function! MyPercent() abort
@@ -469,10 +452,12 @@ endfunction
 " Yggdroot/indentLine {{
 Plug 'Yggdroot/indentLine'
 function! InitIndentline()
+  let g:indentLine_faster = 1
   let g:indentLine_concealcursor=""
-  let g:indentLine_leadingSpaceChar="\u00b7"
-  let g:indentLine_leadingSpaceEnabled=1
-  let g:indentLine_color_term = 237
+  let g:indentLine_color_gui = '#084a55'
+  let g:indentLine_char = '┊'
+"  let g:indentLine_leadingSpaceEnabled=1       "slows down scrolling way too much
+"  let g:indentLine_leadingSpaceChar="\u00b7"
 endfunction
 " }}
 
@@ -508,6 +493,14 @@ inoremap <A-l> <C-o>l
 inoremap <A-0> <C-o>0
 inoremap <A-$> <C-o>$
 
+inoremap <C-e> <C-o>$
+nnoremap <C-e> $
+vnoremap <C-e> $
+inoremap <C-b> <C-o>0
+nnoremap <C-b> 0
+vnoremap <C-b> 0
+
+
 " move to the start of the next/prev word
 noremap <A-b> <C-o>b
 inoremap <A-w> <C-o>w
@@ -537,6 +530,14 @@ nnoremap <leader>v :source $MYVIMRC<CR>
 
 " save
 nnoremap <leader>w :w!<cr>
+
+" make X an operator that removes text without placing text in register
+nmap X "_d
+nmap XX "_dd
+vmap X "_d
+vmap x "_d
+" have x (removes single character) not go into the default register
+nnoremap x "_x
 
 " use ; for commands.
 nnoremap ; :
@@ -575,16 +576,23 @@ endfunction
 " }}
 
 " appearance {{
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1            " enable true color
+set termguicolors
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1          " change curser shape in insert mode
 syntax enable
 set background=dark
-let g:hybrid_custom_term_colors = 1
-let g:hybrid_reduced_contrast = 1            " Remove this line if using the default palette.
-colorscheme hybrid
-set colorcolumn=+1                           " increase the left margin by 1
+"set background=light
+"let g:hybrid_custom_term_colors = 1
+"let g:hybrid_reduced_contrast = 1            " Remove this line if using the default palette.
+"colorscheme hybrid
+"colorscheme solarized8_light_flat
+"colorscheme PaperColor
+" colorscheme tendercontrast
+colorscheme gruvbox
+let g:gruvbox_contrast_dark='hard'
+"set colorcolumn=+1                           " increase the right margin by 1
 set nocursorline                             " kills performance, turn it off
-set nocursorcolumn                           " show vertical line
+set nocursorcolumn                           " kills performance, turn it off
+syntax sync minlines=256                     " start highlighting from 256 lines backwards
 set laststatus=2                             " show the status line
 set lazyredraw                               " don't update the display while executing macros
 set listchars+=tab:›\ "
@@ -595,6 +603,7 @@ set listchars+=precedes:‹
 set listchars+=eol:¶"
 set noshowmode                               " hide show mode in status line, using lightline plugin, not needed
 set nostartofline                            " keep the cursor on the same column
+set relativenumber                           " display relative line numbers
 set number                                   " show line numbers
 set ruler                                    " show the line and column number of the cursor
 set scrolloff=8                              " keep cursor 8 lines from top and bottom when page scrolls
@@ -605,7 +614,7 @@ set showcmd                                  " don't show, in OSX with lazyredra
 set autoread                                 " notify when file has changed outside of vim/nvim
 set autowriteall                             " write on exit
 set backspace=indent,eol,start               " backspace over auto-indent, eol, start to join lines
-set clipboard+=unnamedplus                    " use system clipboard
+set clipboard+=unnamedplus                   " use system clipboard
 set hidden                                   " hide buffers when abandoned, will allow movement to another without saving
 set history=100                              " keep some stuff in history
 set mouse=a                                  " enable mouse for all modes
@@ -628,12 +637,6 @@ set nofoldenable                             " do not fold on start
 " }}
 
 " formatting {{
-" set formatoptions+=r                         " continue comments by default
-" set formatoptions+=o                         " make comment when using o or O from comment line
-" set formatoptions+=q                         " format comments with gq
-" set formatoptions+=n                         " recognize numbered lists
-" set formatoptions+=c                         " format comments
-" set formatoptions+=t                         " wrap when using textwidth
 set formatoptions+=1
 set formatoptions+=j
 set linebreak                                " wrap long lines at a character
@@ -693,24 +696,17 @@ set nowritebackup
 set noswapfile
 
 " undo directory
-set undodir=~/dotfiles/tmp/nvim-undo//
-" returns name of undo file
+set undodir=~/.tmp/nvim-undo//
 set undofile
 if !isdirectory(expand(&undodir))
   call mkdir(expand(&undodir), "p")
 endif
 
 " view directory
-set viewdir=~/dotfiles/tmp/nvim-view//
+set viewdir=~/.tmp/nvim-view//
 if !isdirectory(expand(&viewdir))
   call mkdir(expand(&viewdir), "p")
 endif
-
-" if !has('nvim')
-"   set viminfo='1000,n~/dotfiles/tmp/viminfo
-" else
-"   set viminfo='1000,n~/dotfiles/tmp/nviminfo
-" endif
 " }}
 
 call InitRainbowParentheses()
@@ -892,36 +888,70 @@ if exists(':terminal')
 
   " vim-hybrid
   "black normal/bright
-  let g:terminal_color_0="#2d3c46"
-  let g:terminal_color_8="#425059"
+  " let g:terminal_color_0="#2d3c46"
+  " let g:terminal_color_8="#425059"
 
   "red normal/bright
-  let g:terminal_color_1="#a54242"
-  let g:terminal_color_9="#cc6666"
+  " let g:terminal_color_1="#a54242"
+  " let g:terminal_color_9="#cc6666"
 
   "green normal/bright
-  let g:terminal_color_2="#8c9440"
-  let g:terminal_color_10="#b5bd67"
+  " let g:terminal_color_2="#8c9440"
+  " let g:terminal_color_10="#b5bd67"
 
   "yellow normal/bright
-  let g:terminal_color_3="#de935f"
-  let g:terminal_color_11="#f0c674"
+  " let g:terminal_color_3="#de935f"
+  " let g:terminal_color_11="#f0c674"
 
   "blue normal/bright
-  let g:terminal_color_4="#5f819d"
-  let g:terminal_color_12="#81a2be"
+  " let g:terminal_color_4="#5f819d"
+  " let g:terminal_color_12="#81a2be"
 
   "magenta normal/bright
-  let g:terminal_color_5="#85678f"
-  let g:terminal_color_13="#b294ba"
+  " let g:terminal_color_5="#85678f"
+  " let g:terminal_color_13="#b294ba"
 
   "cyan normal/bright
-  let g:terminal_color_6="#5e8d87"
-  let g:terminal_color_14="#8abeb7"
+  " let g:terminal_color_6="#5e8d87"
+  " let g:terminal_color_14="#8abeb7"
 
   "white normal/bright
-  let g:terminal_color_7="#6c7a80"
-  let g:terminal_color_15="#c5c8c6"
+  " let g:terminal_color_7="#6c7a80"
+  " let g:terminal_color_15="#c5c8c6"
+
+  " solarized
+  "black normal/bright
+  let g:terminal_color_0="#003541"
+  let g:terminal_color_8="#002833"
+
+  "red normal/bright
+  let g:terminal_color_1="#dc322f"
+  let g:terminal_color_9="#cb4b16"
+
+  "green normal/bright
+  let g:terminal_color_2="#859901"
+  let g:terminal_color_10="#586e75"
+
+  "yellow normal/bright
+  let g:terminal_color_3="#b58901"
+  let g:terminal_color_11="#657b83"
+
+  "blue normal/bright
+  let g:terminal_color_4="#268bd2"
+  let g:terminal_color_12="#839496"
+
+  "magenta normal/bright
+  let g:terminal_color_5="#d33682"
+  let g:terminal_color_13="#6c6ec6"
+
+  "cyan normal/bright
+  let g:terminal_color_6="#2aa198"
+  let g:terminal_color_14="#93a1a1"
+
+  "white normal/bright
+  let g:terminal_color_7="#eee8d5"
+  let g:terminal_color_15="#fdf6e3"
+
 endif
 " }}
 
