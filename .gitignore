@@ -16,6 +16,7 @@ base16-shell/*
 bash_history
 bash_prompt_old
 bin/*
+/fisherman/*
 /fish/config.secret.*
 /fish/fish_history
 /fish/fishd*
