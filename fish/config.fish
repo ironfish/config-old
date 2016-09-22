@@ -54,6 +54,7 @@ alias smacs '/usr/local/bin/emacs'
 # alias gs='echo "git status"; git status'
 # alias gt='echo "git tag"; git status'
 
+# git abbreviations
 abbr -a ga git add
 abbr -a gba git branch -a
 abbr -a gc git commit -m
@@ -65,9 +66,14 @@ abbr -a gs git status
 abbr -a gt git tag
 
 # sbt aliases
-alias scc='echo "sbt -mem 2048 clean compile"; sbt -mem 2048 clean compile'
-alias st='echo "sbt -mem 2048 test"; sbt -mem 2048 test'
-alias sr='echo "sbt -mem 2048 run"; sbt -mem 2048 run'
+# alias scc='echo "sbt -mem 2048 clean compile"; sbt -mem 2048 clean compile'
+# alias st='echo "sbt -mem 2048 test"; sbt -mem 2048 test'
+# alias sr='echo "sbt -mem 2048 run"; sbt -mem 2048 run'
+
+# sbt abbreviations
+abbr -a scc sbt -mem 2048 clean compile
+abbr -a st sbt -mem 2048 test
+abbr -a spr sbt -mem 2048 validatePullRequest
 
 # unix aliases
 alias mk="mkdir -p"
