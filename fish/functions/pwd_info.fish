@@ -1,0 +1,1 @@
+/Users/ironfish/.config/fisherman/pwd_info/pwd_info.fish

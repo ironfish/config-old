@@ -1,1 +1,1 @@
-/Users/Ironfish/.config/fisherman/sushi/fish_prompt.fish
+/Users/ironfish/.config/fisherman/simple/functions/fish_prompt.fish

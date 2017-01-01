@@ -1,1 +1,1 @@
-/Users/Ironfish/.config/fisherman/bass/functions/bass.fish
+/Users/ironfish/.config/fisherman/bass/functions/bass.fish

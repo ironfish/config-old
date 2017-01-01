@@ -1,1 +1,1 @@
-/Users/Ironfish/.fzf/shell/key-bindings.fish
+/Users/ironfish/.fzf/shell/key-bindings.fish

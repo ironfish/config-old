@@ -1,1 +1,1 @@
-/Users/Ironfish/.config/fisherman/bass/functions/__bass.py
+/Users/ironfish/.config/fisherman/bass/functions/__bass.py

@@ -95,6 +95,7 @@ function! InitFzfVim()
     \ 'Search Files        Search in files this directory and below.': ":Ag ",
     \ 'Sbt Console         Run sbt console on the current project.': ":call ExecSbt('console')\<CR>",
     \ 'Sbt Compile         Run sbt compile on the current project.': ":call ExecSbt('compile')\<CR>",
+    \ 'Sbt Cont. Compile   Run sbt compile on the current project.': ":call ExecSbt('~compile')\<CR>",
     \ 'Sbt Clean           Run sbt clean on the current project.': ":call ExecSbt('clean')\<CR>",
     \ 'Sbt Test            Run sbt test on the current project.': ":call ExecSbt('test')\<CR>",
     \ 'Save                Save current buffer.': ":w!\<CR>",
@@ -199,7 +200,7 @@ Plug 'rizzatti/dash.vim',  { 'on': 'Dash' }
 " }}
 
 " Shougo/deoplete.nvim {{
-Plug 'Shougo/deoplete.nvim'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 function InitDeoplete()
   let g:deoplete#enable_at_startup = 1
   let g:deoplete#enable_ignore_case = 1
@@ -253,21 +254,18 @@ Plug 'kristijanhusak/vim-hybrid-material'
 Plug 'lifepillar/vim-solarized8'
 Plug 'jacoborus/tender.vim'
 Plug 'morhetz/gruvbox'
+Plug 'MaxSt/FlatColor'
 " }}
+
 
 " itchyny/lightline.vim {{
 Plug 'itchyny/lightline.vim'
-"\ 'colorscheme': 'Hybrid',
-"\ 'colorscheme': 'solarized',
-"let g:tender_lightline = 1
-"\ 'colorscheme': 'tender',
-"\ 'colorscheme': 'gruvbox',
 function! InitLightline()
-  let g:tender_lightline = 1
   let g:lightline = {
+    \ 'colorscheme': 'tenderplus',
     \ 'active': {
     \   'left': [['mode', 'paste'],['fugitive'],['readonly', 'filename']],
-    \   'right': [['fileformat', 'fileencoding', 'filetype'], ['trailing', 'indentation'],['percent', 'lineinfo']]
+    \   'right': [['indentation', 'trailing', 'percent', 'lineinfo'], ['fileformat', 'fileencoding', 'filetype']]
     \ },
     \ 'inactive': {
     \   'left': [['mode'],['filename']]
@@ -345,7 +343,7 @@ function! InitLightline()
       \ &ft == 'fzf' ? '' :
       \ &ft == 'sbtc' ? matchstr(path, '-mem.*') :
       \ &ft == 'dirvish' ? path :
-      \ ('' != fname ? path : '[No Name]') .
+      \ ('' != fname ? pathshorten(path) : '[No Name]') .
       \ ('' != MyModified() ? ' ' . MyModified() : '')
   endfunction
 
@@ -580,17 +578,10 @@ set termguicolors
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1          " change curser shape in insert mode
 syntax enable
 set background=dark
-"set background=light
-"let g:hybrid_custom_term_colors = 1
-"let g:hybrid_reduced_contrast = 1            " Remove this line if using the default palette.
-"colorscheme hybrid
-"colorscheme solarized8_light_flat
-colorscheme PaperColor
-let g:lightline = { 'colorscheme': 'PaperColor' }
-" colorscheme tendercontrast
-"colorscheme gruvbox
-"let g:gruvbox_contrast_dark='hard'
-"set colorcolumn=+1                           " increase the right margin by 1
+
+colorscheme tender
+let g:lightline = { 'colorscheme': 'tender' }
+
 set cursorline                               " kills performance, turn it off
 set nocursorcolumn                           " kills performance, turn it off
 syntax sync minlines=256                     " start highlighting from 256 lines backwards
@@ -821,135 +812,155 @@ if exists(':terminal')
   " allow terminal buffer size to be very large
   let g:terminal_scrollback_buffer_size = 100000
 
+  " tender
+  let g:terminal_color_background =  "#1e1e1e"
+  let g:terminal_color_foreground =  "#adadad"
+  let g:terminal_color_0 =  "#1e1e1e"
+  let g:terminal_color_1 =  "#b60024"
+  let g:terminal_color_2 =  "#8e9d05"
+  let g:terminal_color_3 =  "#c8ac74"
+  let g:terminal_color_4 =  "#63c3f1"
+  let g:terminal_color_5 =  "#c76fbd"
+  let g:terminal_color_6 =  "#259286"
+  let g:terminal_color_7 =  "#eaeaea"
+  let g:terminal_color_8 =  "#262626"
+  let g:terminal_color_9 =  "#ee1c42"
+  let g:terminal_color_10 =  "#bec94a"
+  let g:terminal_color_11 =  "#fdb63b"
+  let g:terminal_color_12 =  "#a5d6eb"
+  let g:terminal_color_13 =  "#e24d8e"
+  let g:terminal_color_14 =  "#00b39e"
+  let g:terminal_color_15 =  "#eaeaea"
+
   " PaperColor
-  "black normal/bright
-  let g:terminal_color_0="#2c2c2c"
-  let g:terminal_color_8="#545454"
+  " black normal/bright
+  " let g:terminal_color_0="#2c2c2c"
+  " let g:terminal_color_8="#545454"
 
-  "red normal/bright
-  let g:terminal_color_1="#c62828"
-  let g:terminal_color_9="#ef5350"
+  " red normal/bright
+  " let g:terminal_color_1="#c62828"
+  " let g:terminal_color_9="#ef5350"
 
-  "green normal/bright
-  let g:terminal_color_2="#558b2f"
-  let g:terminal_color_10="#8bc34a"
+  " green normal/bright
+  " let g:terminal_color_2="#558b2f"
+  " let g:terminal_color_10="#8bc34a"
 
-  "yellow normal/bright
-  let g:terminal_color_3="#f9a825"
-  let g:terminal_color_11="#ffeb3b"
+  " yellow normal/bright
+  " let g:terminal_color_3="#f9a825"
+  " let g:terminal_color_11="#ffeb3b"
 
-  "blue normal/bright
-  let g:terminal_color_4="#1565c0"
-  let g:terminal_color_12="#64b5f6"
+  " blue normal/bright
+  " let g:terminal_color_4="#1565c0"
+  " let g:terminal_color_12="#64b5f6"
 
-  "magenta normal/bright
-  let g:terminal_color_5="#6a1e9a"
-  let g:terminal_color_13="#ba68c8"
+  " magenta normal/bright
+  " let g:terminal_color_5="#6a1e9a"
+  " let g:terminal_color_13="#ba68c8"
 
-  "cyan normal/bright
-  let g:terminal_color_6="#00838f"
-  let g:terminal_color_14="#26c6da"
+  " cyan normal/bright
+  " let g:terminal_color_6="#00838f"
+  " let g:terminal_color_14="#26c6da"
 
-  "white normal/bright
-  let g:terminal_color_7="#f2f2f2"
-  let g:terminal_color_15="#e0e0e0"
+  " white normal/bright
+  " let g:terminal_color_7="#f2f2f2"
+  " let g:terminal_color_15="#e0e0e0"
 
   " vim-hybrid-material
-  "black normal/bright
+  " black normal/bright
   " let g:terminal_color_0="#263238"
   " let g:terminal_color_8="#707880"
 
-  "red normal/bright
+  " red normal/bright
   " let g:terminal_color_1="#5f0700"
   " let g:terminal_color_9="#cc6666"
 
-  "green normal/bright
+  " green normal/bright
   " let g:terminal_color_2="#b5bd68"
   " let g:terminal_color_10="#b5bd68"
 
-  "yellow normal/bright
+  " yellow normal/bright
   " let g:terminal_color_3="#f0c674"
   " let g:terminal_color_11="#"
 
-  "blue normal/bright
+  " blue normal/bright
   " let g:terminal_color_4="#000c5f"
   " let g:terminal_color_12="#81a2be"
 
-  "magenta normal/bright
+  " magenta normal/bright
   " let g:terminal_color_5="#5f125f"
   " let g:terminal_color_13="#b294bb"
 
-  "cyan normal/bright
+  " cyan normal/bright
   " let g:terminal_color_6="#005f5f"
   " let g:terminal_color_14="#8abeb7"
 
-  "white normal/bright
+  " white normal/bright
   " let g:terminal_color_7="#ecefef"
   " let g:terminal_color_15="#ffffff"
 
   " vim-hybrid
-  "black normal/bright
+  " black normal/bright
   " let g:terminal_color_0="#2d3c46"
   " let g:terminal_color_8="#425059"
 
-  "red normal/bright
+  " red normal/bright
   " let g:terminal_color_1="#a54242"
   " let g:terminal_color_9="#cc6666"
 
-  "green normal/bright
+  " green normal/bright
   " let g:terminal_color_2="#8c9440"
   " let g:terminal_color_10="#b5bd67"
 
-  "yellow normal/bright
+  " yellow normal/bright
   " let g:terminal_color_3="#de935f"
   " let g:terminal_color_11="#f0c674"
 
-  "blue normal/bright
+  " blue normal/bright
   " let g:terminal_color_4="#5f819d"
   " let g:terminal_color_12="#81a2be"
 
-  "magenta normal/bright
+  " magenta normal/bright
   " let g:terminal_color_5="#85678f"
   " let g:terminal_color_13="#b294ba"
 
-  "cyan normal/bright
+  " cyan normal/bright
   " let g:terminal_color_6="#5e8d87"
   " let g:terminal_color_14="#8abeb7"
 
-  "white normal/bright
+  " white normal/bright
   " let g:terminal_color_7="#6c7a80"
   " let g:terminal_color_15="#c5c8c6"
 
   " solarized
-  "black normal/bright
+  " black normal/bright
   " let g:terminal_color_0="#003541"
   " let g:terminal_color_8="#002833"
 
-  "red normal/bright
+  " red normal/bright
   " let g:terminal_color_1="#dc322f"
   " let g:terminal_color_9="#cb4b16"
 
-  "green normal/bright
+  " green normal/bright
   " let g:terminal_color_2="#859901"
   " let g:terminal_color_10="#586e75"
 
-  "yellow normal/bright
+  " yellow normal/bright
   " let g:terminal_color_3="#b58901"
   " let g:terminal_color_11="#657b83"
 
-  "blue normal/bright
+  " blue normal/bright
   " let g:terminal_color_4="#268bd2"
   " let g:terminal_color_12="#839496"
 
-  "magenta normal/bright
+  " magenta normal/bright
   " let g:terminal_color_5="#d33682"
   " let g:terminal_color_13="#6c6ec6"
 
-  "cyan normal/bright
+  " cyan normal/bright
   " let g:terminal_color_6="#2aa198"
   " let g:terminal_color_14="#93a1a1"
 
-  "white normal/bright
+  " white normal/bright
   " let g:terminal_color_7="#eee8d5"
   " let g:terminal_color_15="#fdf6e3"
 

@@ -40,7 +40,8 @@ alias cdc   'cd ~/GitHub/config'
 # alias dmssh   'echo "docker-machine ssh default"; docker-machine ssh default'
 # alias dmenv   'echo "docker-machine env default"; docker-machine env default'
 
-# emacs aliases
+# app aliases
+alias vimr '/Applications/VimR.app/Contents/Resources/vimr'
 alias smacs '/usr/local/bin/emacs'
 
 # git aliases

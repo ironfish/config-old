@@ -1,1 +1,1 @@
-/Users/Ironfish/.config/fisherman/git_util/git_is_detached_head.fish
+/Users/ironfish/.config/fisherman/git_util/git_is_detached_head.fish

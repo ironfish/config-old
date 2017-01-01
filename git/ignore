@@ -43,3 +43,16 @@ json-output.txt
 .ensime
 *.log
 typesafe.properties
+
+# SBT specific
+.cache/
+.history/
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+project/project/project/
+.log
