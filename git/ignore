@@ -56,3 +56,7 @@ project/boot/
 project/plugins/project/
 project/project/project/
 .log
+
+# fish shell specific
+fishfile
+fzf_key_bindings.fish
